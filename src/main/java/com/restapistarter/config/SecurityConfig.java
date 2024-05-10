@@ -65,16 +65,15 @@ public class SecurityConfig {
 			allowedOrigins.add("http://localhost");
 			CorsConfiguration config = new CorsConfiguration();
 			config.setAllowedOrigins(allowedOrigins);
-			config.setAllowedMethods(Arrays.asList("GET", "POST"));
+			config.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH"));
 			config.setAllowedHeaders(Arrays.asList("*"));
 			config.setAllowCredentials(true);
 			return config;
 		}))
 				.authorizeHttpRequests((requests) -> requests
-						.requestMatchers("/", "/home", "/public", "/products/**", "/auth/**", "/api/**",
-								"/actuator/**",
-								"/clienti/**", "/csrf", "/error",  "swagger-ui.html", "/swagger-ui/**",
-								"/v3/**")
+						.requestMatchers("/", "/home", "/public", "/auth/**", "/actuator/**", "/error", "/login",
+								"/csrf",
+								"swagger-ui.html", "/swagger-ui/**", "/v3/**")
 						.permitAll()
 						.anyRequest().authenticated())
 
@@ -84,9 +83,8 @@ public class SecurityConfig {
 				.logout((logout) -> logout.permitAll())
 
 				.authenticationProvider(authenticationProvider())
+				.csrf(csrf -> csrf.ignoringRequestMatchers("/csrf", "/auth/generateToken"))
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
-
-		// .csrf(csrf -> csrf.disable())
 		return http.build();
 	}
 

@@ -23,18 +23,18 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
+
     @Column(name = "name")
     private String name;
 
-    @Column(name = "descrizione")
-    private String descrizione;
+    @Column(name = "description")
+    private String description;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria")
-    private Category categoria;
+    @JoinColumn(name = "id_category")
+    private Category category;
 
-    @Column(name = "prezzo_unitario")
-    private double prezzo;
+    @Column(name = "price")
+    private double price;
 
 }

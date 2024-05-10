@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.restapistarter.model.User;
 import com.restapistarter.repository.UserRepository;
-import com.restapistarter.service.AuthRequest;
-import com.restapistarter.service.JwtService;
 import com.restapistarter.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,9 +34,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private JwtService jwtService;
 
     @GetMapping("/")
     @Operation(summary = "Users api", description = "This API extracts all users")
@@ -63,7 +58,7 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute("datiUser") User p) {
+    public String update(@ModelAttribute("userData") User p) {
         repo.save(p);
         return "redirect:/";
     }
@@ -85,25 +80,5 @@ public class UserController {
             }
         }
         return "redirect:/api/users";
-    }
-/* 
-    @PostMapping("/generateToken")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        System.out.println(authRequest);
-        System.out.println(authRequest.getUsername());
-        System.out.println(authRequest.getPassword());
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
-        } else {
-            throw new UsernameNotFoundException("Invalid user request!");
-        }
-    }
-*/
-
-    @PostMapping("/generateToken")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        return jwtService.authenticateAndGetToken(authRequest);
     }
 }

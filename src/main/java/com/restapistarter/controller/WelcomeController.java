@@ -4,21 +4,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-//import com.springboot.catalogue.CustomException;
+import com.restapistarter.config.CustomException;
 
 @Controller
 public class WelcomeController {
-    @ResponseBody
-    @GetMapping("/test")
-    public String test() {
-        return "test controller";
-    }
 
-    @ResponseBody
-    @GetMapping("/testlogin")
-    public String testlogin() {
-        return "test controller";
-    }
+ 
 
     @GetMapping("/")
     public String index() {
@@ -30,15 +21,14 @@ public class WelcomeController {
         return "login";
     }
 
-    @GetMapping("/error")
-    public String error() {
-        // throw new CustomException(500, "Si è verificato un errore personalizzato.");
-        return "error";
+    @ResponseBody
+    @GetMapping("/testlogin")
+    public String testlogin() {
+        return "test protected page";
     }
 
-    @GetMapping("/error2")
-    public String error2() {
-        // throw new CustomException(500, "Si è verificato un errore personalizzato.");
-        return "error";
+    @GetMapping("/error")
+    public String error() {
+        throw new CustomException(500, "Personalized error");
     }
 }
