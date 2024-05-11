@@ -1,44 +1,39 @@
 package com.restapistarter.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.client.RestTemplate;
 
 import com.restapistarter.model.Product;
 import com.restapistarter.repository.ProductRepository;
 
 @Service
 public class ProductService {
-  // private final RestTemplate restTemplate;
 
     @Autowired
-    ProductRepository repo;
-/* 
-    public ProductService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-*/
+    ProductRepository repository;
+
     public Product getProductById(int productId) {
-        return repo.findById(productId)
+        return repository.findById(productId)
                 .orElse(null);
     }
 
     public ResponseEntity<String> updateProduct(@PathVariable int id, @RequestBody Product updatedProduct) {
         try {
-            if (!repo.existsById(id)) {
+            if (!repository.existsById(id)) {
                 return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
             }
 
-            Product existingProduct = repo.findById(id).get();
+            Product existingProduct = repository.findById(id).get();
 
             if (updatedProduct.getName() != null) {
                 existingProduct.setName(updatedProduct.getName());
@@ -53,20 +48,21 @@ public class ProductService {
                 existingProduct.setPrice(updatedProduct.getPrice());
             }
 
-            repo.save(existingProduct);
+            repository.save(existingProduct);
 
-            return new ResponseEntity<>("Prodotto aggiornato con successo", HttpStatus.OK);
+            return new ResponseEntity<>("Product update successfully", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Errore durante l'aggiornamento del prodotto", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error update",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public String deleteProduct(@PathVariable("id") Integer idProduct) {
         if (idProduct != null) {
-            Optional<Product> pOptional = repo.findById(idProduct);
+            Optional<Product> pOptional = repository.findById(idProduct);
             if (pOptional.isPresent()) {
                 Product p = pOptional.get();
-                repo.delete(p);
+                repository.delete(p);
             } else {
 
             }
@@ -75,10 +71,16 @@ public class ProductService {
     }
 
     public List<Product> searchProducts(String keyword) {
-        return repo.searchProducts(keyword);
+        return repository.searchProducts(keyword);
     }
 
     public List<Product> searchProductsByCategoryId(int categoryId) {
-        return repo.findByCategoryId(categoryId);
+        return repository.findByCategoryId(categoryId);
+    }
+
+    public List<Product> getAllProducts() {
+        List<Product> products = new ArrayList<>();
+        repository.findAll().forEach(products::add);
+        return products;
     }
 }

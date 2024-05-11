@@ -77,12 +77,8 @@ public class ProductController {
     }
 
     @GetMapping("/stream-test")
-    public Product[] getServiceData(Model model) {
-        Iterable<Product> iterableProducts = repo.findAll();
-        Product[] products = StreamSupport.stream(iterableProducts.spliterator(), false).toArray(Product[]::new);
-        for (Product product : products) {
-            System.out.println("ID: " + product.getId() + ", Nome: " + product.getName());
-        }
-        return products;
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = service.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 }

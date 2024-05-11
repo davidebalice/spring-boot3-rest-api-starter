@@ -1,12 +1,20 @@
 package com.restapistarter.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.restapistarter.model.Category;
+import com.restapistarter.model.Product;
 
 public interface CategoryRepository extends JpaRepository<Category,Integer>{
 
     void deleteById(Optional<Category> p);
+
+     @Query("SELECT c FROM Category c " +
+            "WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " )
+    List<Category> searchCategories(@Param("keyword") String keyword);
 
 }
