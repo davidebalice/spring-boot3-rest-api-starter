@@ -1,5 +1,6 @@
 package com.restapistarter.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,15 @@ import com.restapistarter.repository.ProductRepository;
 
 @Service
 public class ProductService {
-    private final RestTemplate restTemplate;
+  // private final RestTemplate restTemplate;
 
     @Autowired
     ProductRepository repo;
-
+/* 
     public ProductService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-
+*/
     public Product getProductById(int productId) {
         return repo.findById(productId)
                 .orElse(null);
@@ -73,4 +74,11 @@ public class ProductService {
         return "redirect:/product";
     }
 
+    public List<Product> searchProducts(String keyword) {
+        return repo.searchProducts(keyword);
+    }
+
+    public List<Product> searchProductsByCategoryId(int categoryId) {
+        return repo.findByCategoryId(categoryId);
+    }
 }

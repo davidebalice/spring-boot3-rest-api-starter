@@ -1,6 +1,9 @@
 package com.restapistarter.controller;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.restapistarter.model.Product;
@@ -32,16 +36,6 @@ public class ProductController {
     @GetMapping("/")
     public Iterable<Product> list() {
         return repo.findAll();
-    }
-
-    @GetMapping("/service-data")
-    public Product[] getServiceData(Model model) {
-        Iterable<Product> iterableProducts = repo.findAll();
-        Product[] products = StreamSupport.stream(iterableProducts.spliterator(), false).toArray(Product[]::new);
-        for (Product product : products) {
-            System.out.println("ID: " + product.getId() + ", Nome: " + product.getName());
-        }
-        return products;
     }
 
     @GetMapping("/{id}")
@@ -69,5 +63,26 @@ public class ProductController {
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id) {
         return service.deleteProduct(id);
+    }
+
+    @GetMapping("/search")
+    public List<Product> searchProducts(@RequestParam("keyword") String keyword) {
+        List<Product> products = service.searchProducts(keyword);
+        return products;
+    }
+
+    @GetMapping("/searchByCategoryId")
+    public List<Product> searchProductsByCategoryId(@RequestParam int categoryId) {
+        return service.searchProductsByCategoryId(categoryId);
+    }
+
+    @GetMapping("/stream-test")
+    public Product[] getServiceData(Model model) {
+        Iterable<Product> iterableProducts = repo.findAll();
+        Product[] products = StreamSupport.stream(iterableProducts.spliterator(), false).toArray(Product[]::new);
+        for (Product product : products) {
+            System.out.println("ID: " + product.getId() + ", Nome: " + product.getName());
+        }
+        return products;
     }
 }
