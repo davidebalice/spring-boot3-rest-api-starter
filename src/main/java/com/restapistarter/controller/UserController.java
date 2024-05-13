@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public String createCustomer(@RequestBody User user) {
+    public String createUser(@RequestBody User user) {
 
         System.out.println("customer.getPassword():" + user.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));

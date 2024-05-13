@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.restapistarter.service.AuthRequest;
-import com.restapistarter.service.JwtAuthFilter;
-import com.restapistarter.service.JwtService;
+import com.restapistarter.security.AuthRequest;
+import com.restapistarter.security.JwtAuthFilter;
+import com.restapistarter.security.JwtService;
 
 @RestController
 @RequestMapping("/auth/")

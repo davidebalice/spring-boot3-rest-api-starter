@@ -25,7 +25,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import com.restapistarter.service.JwtAuthFilter;
+import com.restapistarter.security.JwtAuthFilter;
 import com.restapistarter.service.UserService;
 
 @Configuration
