@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,8 +18,11 @@ import com.restapistarter.repository.ProductRepository;
 @Service
 public class ProductService {
 
-    @Autowired
-    ProductRepository repository;
+    private final ProductRepository repository;
+
+    public ProductService(ProductRepository repository) {
+        this.repository = repository;
+    }
 
     public Product getProductById(int productId) {
         return repository.findById(productId)

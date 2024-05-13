@@ -10,7 +10,6 @@ import com.restapistarter.config.CustomException;
 public class WelcomeController {
 
  
-
     @GetMapping("/")
     public String index() {
         return "index";

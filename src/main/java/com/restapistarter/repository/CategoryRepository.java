@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.restapistarter.model.Category;
-import com.restapistarter.model.Product;
 
 public interface CategoryRepository extends JpaRepository<Category,Integer>{
 

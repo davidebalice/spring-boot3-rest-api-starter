@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.restapistarter.model.Category;
 import com.restapistarter.repository.CategoryRepository;
+import com.restapistarter.repository.CustomerRepository;
 import com.restapistarter.service.CategoryService;
+import com.restapistarter.service.CustomerService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -27,11 +29,13 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/categories/")
 public class CategoryController {
 
-    @Autowired
-    CategoryRepository repository;
+    private final CategoryRepository repository;
+    private final CategoryService service;
 
-    @Autowired
-    CategoryService service;
+    public CategoryController(CategoryRepository repository, CategoryService service) {
+        this.repository = repository;
+        this.service = service;
+    }
 
     @GetMapping("/")
     @Operation(summary = "Category's Rest Api", description = "This API extracts all categories")

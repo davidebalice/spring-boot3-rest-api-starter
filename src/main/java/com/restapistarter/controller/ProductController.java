@@ -1,14 +1,10 @@
 package com.restapistarter.controller;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.StreamSupport;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,11 +23,13 @@ import com.restapistarter.service.ProductService;
 @RequestMapping("/api/products/")
 public class ProductController {
 
-    @Autowired
-    ProductRepository repo;
+    private final ProductRepository repo;
+    private final ProductService service;
 
-    @Autowired
-    ProductService service;
+    public ProductController(ProductRepository repo, ProductService service) {
+        this.repo = repo;
+        this.service = service;
+    }
 
     @GetMapping("/")
     public Iterable<Product> list() {

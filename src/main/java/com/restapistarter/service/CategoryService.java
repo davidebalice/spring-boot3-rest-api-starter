@@ -16,8 +16,11 @@ import com.restapistarter.repository.CategoryRepository;
 @Service
 public class CategoryService {
 
-    @Autowired
-    CategoryRepository repository;
+    private final CategoryRepository repository;
+
+    public CategoryService(CategoryRepository repository) {
+        this.repository = repository;
+    }
 
     public Category getCategoryById(int categoryId) {
         return repository.findById(categoryId)

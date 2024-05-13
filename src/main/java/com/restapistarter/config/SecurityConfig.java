@@ -33,15 +33,15 @@ import com.restapistarter.service.UserService;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+	@Autowired
+	private JwtAuthFilter authFilter;
+	
 	@Bean
 	public CsrfTokenRepository csrfTokenRepository() {
 		HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
 		repository.setHeaderName("X-XSRF-TOKEN");
 		return repository;
 	}
-
-	@Autowired
-	private JwtAuthFilter authFilter;
 
 	@Bean
 	public UserDetailsService userDetailsService() {

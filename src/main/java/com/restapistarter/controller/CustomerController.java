@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.restapistarter.model.Customer;
-import com.restapistarter.model.Product;
 import com.restapistarter.repository.CustomerRepository;
 import com.restapistarter.service.CustomerService;
 
@@ -28,11 +27,13 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/customers/")
 public class CustomerController {
 
-    @Autowired
-    CustomerRepository repository;
+    private final CustomerRepository repository;
+    private final CustomerService service;
 
-    @Autowired
-    CustomerService service;
+    public CustomerController(CustomerRepository repository, CustomerService service) {
+        this.repository = repository;
+        this.service = service;
+    }
 
     @GetMapping("/")
     @Operation(summary = "Customer's Rest Api", description = "This API extracts all customers")

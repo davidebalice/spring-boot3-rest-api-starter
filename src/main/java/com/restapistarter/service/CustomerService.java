@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.restapistarter.model.Customer;
+import com.restapistarter.repository.CategoryRepository;
 import com.restapistarter.repository.CustomerRepository;
 
 @Service
 public class CustomerService {
 
-    @Autowired
-    CustomerRepository repository;
+    private final CustomerRepository repository;
+
+    public CustomerService(CustomerRepository repository) {
+        this.repository = repository;
+    }
 
     public Customer getCustomerById(int customerId) {
         return repository.findById(customerId)
