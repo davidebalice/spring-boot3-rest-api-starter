@@ -8,12 +8,12 @@
 		<version>3.2.5</version>
 		<relativePath/>
 	</parent>
-	<groupId>com.restapistarter</groupId>
-	<artifactId>restapistarter</artifactId>
+	<groupId>com.restapi</groupId>
+	<artifactId>restapi</artifactId>
 	<version>0.0.5</version>
 	<packaging>jar</packaging>
-	<name>restapistarter</name>
-	<description>Rest Api starter</description>
+	<name>restapi</name>
+	<description>Rest Api start template</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
