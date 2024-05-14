@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.restapi.security.AuthRequest;
-import com.restapi.security.JwtAuthFilter;
 import com.restapi.security.JwtService;
 
 @RestController
-@RequestMapping("/auth/")
+@RequestMapping("/api/v1/")
 public class AuthController {
 
     private final JwtService jwtService;
@@ -19,7 +18,7 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/generateToken")
+    @PostMapping("/login")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         return jwtService.authenticateAndGetToken(authRequest);
     }

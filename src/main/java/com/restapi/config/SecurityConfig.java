@@ -21,12 +21,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import com.restapi.security.JwtAuthFilter;
 import com.restapi.service.UserService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -35,7 +38,7 @@ public class SecurityConfig {
 
 	@Autowired
 	private JwtAuthFilter authFilter;
-	
+
 	@Bean
 	public CsrfTokenRepository csrfTokenRepository() {
 		HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
@@ -71,20 +74,30 @@ public class SecurityConfig {
 			return config;
 		}))
 				.authorizeHttpRequests((requests) -> requests
-						.requestMatchers("/", "/home", "/public", "/auth/**", "/actuator/**", "/error", "/login",
-								"/csrf",
+						.requestMatchers("/", "/home", "/public", "/actuator/**", "/api/v1/error", "/api/v1/login",
+								"/api/v1/csrf",
 								"swagger-ui.html", "/swagger-ui/**", "/v3/**")
 						.permitAll()
 						.anyRequest().authenticated())
 
 				.formLogin((form) -> form
-						.loginPage("/login")
+						.loginPage("/api/v1/signin")
 						.permitAll())
 				.logout((logout) -> logout.permitAll())
 
 				.authenticationProvider(authenticationProvider())
-				.csrf(csrf -> csrf.ignoringRequestMatchers("/csrf", "/auth/generateToken"))
-				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+				.csrf(csrf -> csrf
+						.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**", "POST"))
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "GET"),
+								new AntPathRequestMatcher("/api/v1/login", "POST")))
+
+				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+				.exceptionHandling((exceptionHandling) -> exceptionHandling
+						.authenticationEntryPoint((request, response, authException) -> {
+							response.setContentType("application/json");
+							response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+							response.getWriter().write("{ \"message\": \"Unauthorized: Token expired\" }");
+						}));
 		return http.build();
 	}
 

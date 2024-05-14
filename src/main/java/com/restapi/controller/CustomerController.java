@@ -1,7 +1,6 @@
 package com.restapi.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/customers/")
+@RequestMapping("/api/v1/customers/")
 public class CustomerController {
 
     private final CustomerRepository repository;

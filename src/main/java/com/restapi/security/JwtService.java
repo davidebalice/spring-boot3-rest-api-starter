@@ -6,14 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.security.core.Authentication;
+
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -33,12 +36,22 @@ public class JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String userName) {
-        return Jwts.builder()
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + 1000 * 60 * 30);
+
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("jwt-token", token);
+
+        return jsonObject.toJSONString();
+
     }
 
     private Key getSignKey() {
@@ -47,7 +60,12 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (ExpiredJwtException ex) {
+            // Token JWT scaduto, gestisci l'eccezione
+            return "{\"error\":\"Token JWT scaduto\"}";
+        }
     }
 
     public Date extractExpiration(String token) {
@@ -77,7 +95,7 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-     public String authenticateAndGetToken(AuthRequest authRequest) {
+    public String authenticateAndGetToken(AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {

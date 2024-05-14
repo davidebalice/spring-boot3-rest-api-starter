@@ -20,7 +20,7 @@ import com.restapi.repository.ProductRepository;
 import com.restapi.service.ProductService;
 
 @RestController
-@RequestMapping("/api/products/")
+@RequestMapping("/api/v1/products/")
 public class ProductController {
 
     private final ProductRepository repo;

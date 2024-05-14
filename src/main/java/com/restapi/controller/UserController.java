@@ -3,7 +3,6 @@ package com.restapi.controller;
 import java.util.Optional;
 
 import org.springdoc.core.annotations.RouterOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +21,7 @@ import com.restapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping("/api/users/")
+@RequestMapping("/api/v1/users/")
 public class UserController {
 
     private final UserRepository repository;
@@ -48,13 +47,9 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public String createUser(@RequestBody User user) {
-
-        System.out.println("customer.getPassword():" + user.getPassword());
+    public void createUser(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        System.out.println("customer.getPassword() dopo:" + user.getPassword());
         repository.save(user);
-        return "redirect:/api/users/";
     }
 
     @PostMapping("/update")

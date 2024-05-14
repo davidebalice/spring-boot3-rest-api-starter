@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/categories/")
+@RequestMapping("/api/v1/categories/")
 public class CategoryController {
 
     private final CategoryRepository repository;
