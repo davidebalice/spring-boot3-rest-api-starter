@@ -1,20 +1,11 @@
-package com.springboot.catalogue;
+package com.restapistarter;
 
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-/* 
-@SpringBootTest
-class CatalogueApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
-}
-*/
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

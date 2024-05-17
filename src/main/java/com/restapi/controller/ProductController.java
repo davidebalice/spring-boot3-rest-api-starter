@@ -41,10 +41,15 @@ public class ProductController {
         return service.getProductById(id);
     }
 
+    @GetMapping("/product")
+    public Product getByIdQs(@RequestParam Integer id) {
+        return service.getProductById(id);
+    }
+
     @PostMapping("/add")
     public String add(@RequestBody Product p) {
         repo.save(p);
-        return "redirect:/api/prodotti/";
+        return "redirect:/api/products/";
     }
 
     @PostMapping("/update")
