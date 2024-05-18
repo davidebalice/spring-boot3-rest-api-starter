@@ -2,9 +2,11 @@ package com.restapi.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 import org.springdoc.core.annotations.RouterOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restapi.dto.CategoryDto;
+import com.restapi.mapper.CategoryMapper;
 import com.restapi.model.Category;
 import com.restapi.repository.CategoryRepository;
 import com.restapi.service.CategoryService;
@@ -37,14 +41,24 @@ public class CategoryController {
 
     @GetMapping("/")
     @Operation(summary = "Category's Rest Api", description = "This API extracts all categories")
-    public Iterable<Category> list() {
-        return repository.findAll();
+    public ResponseEntity<List<CategoryDto>> list() {
+        List<Category> categories = (List<Category>) repository.findAll();
+        List<CategoryDto> categoriesDto = categories.stream()
+                .map(CategoryMapper::mapToCategoryDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(categoriesDto);
     }
 
-    @GetMapping("/{id}")
-    @RouterOperation(operation = @io.swagger.v3.oas.annotations.Operation(summary = "Category's Rest Api", description = "This API extracts one Category"))
-    public Category getById(@PathVariable Integer id) {
-        return repository.findById(id).get();
+   @GetMapping("/{id}")
+    @Operation(summary = "Category's Rest Api", description = "This API extracts one Category")
+    public ResponseEntity<CategoryDto> getById(@PathVariable Integer id) {
+        Optional<Category> category = repository.findById(id);
+        if (category.isPresent()) {
+            CategoryDto categoryDto = CategoryMapper.mapToCategoryDto(category.get());
+            return new ResponseEntity<>(categoryDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/add")

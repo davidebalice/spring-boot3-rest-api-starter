@@ -2,6 +2,8 @@ package com.restapi.model;
 
 import java.time.LocalDateTime;
 
+import com.restapi.dto.CategoryDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

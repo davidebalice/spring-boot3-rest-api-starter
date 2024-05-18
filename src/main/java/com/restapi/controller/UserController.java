@@ -45,11 +45,11 @@ public class UserController {
     public User getById(@PathVariable Integer id) {
         return repository.findById(id).get();
     }
-
     @PostMapping("/add")
-    public void createUser(@RequestBody User user) {
+    public ResponseEntity<String> createUser(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
+        return ResponseEntity.ok("User created successfully");
     }
 
     @PostMapping("/update")
