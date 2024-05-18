@@ -41,6 +41,7 @@ public class User {
 
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email should be valid")
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotBlank(message = "Password is mandatory")

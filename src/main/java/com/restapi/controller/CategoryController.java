@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.restapi.model.Category;
 import com.restapi.repository.CategoryRepository;
-import com.restapi.repository.CustomerRepository;
 import com.restapi.service.CategoryService;
-import com.restapi.service.CustomerService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
