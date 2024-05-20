@@ -3,7 +3,6 @@ package com.restapi.controller;
 import java.util.List;
 
 import org.springdoc.core.annotations.RouterOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -47,9 +46,9 @@ public class CustomerController {
     }
 
     @PostMapping("/add")
-    public String add(@Valid @RequestBody Customer p) {
+    public ResponseEntity<String> add(@Valid @RequestBody Customer p) {
         repository.save(p);
-        return "redirect:/api/customers/";
+        return ResponseEntity.ok("Customer added successfully");
     }
 
     @PostMapping("/update")
@@ -64,8 +63,9 @@ public class CustomerController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id) {
-        return service.deleteCustomer(id);
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
+        service.deleteCustomer(id);
+        return ResponseEntity.ok("Customer deleted successfully");
     }
 
     @GetMapping("/search")

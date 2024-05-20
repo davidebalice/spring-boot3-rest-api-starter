@@ -1,5 +1,6 @@
 package com.restapi.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springdoc.core.annotations.RouterOperation;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restapi.dto.UserDto;
 import com.restapi.model.User;
 import com.restapi.repository.UserRepository;
 import com.restapi.service.UserService;
@@ -36,15 +38,16 @@ public class UserController {
 
     @GetMapping("/")
     @Operation(summary = "Users api", description = "This API extracts all users")
-    public Iterable<User> list() {
-        return repository.findAll();
+    public List<UserDto> list() {
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
     @RouterOperation(operation = @io.swagger.v3.oas.annotations.Operation(summary = "User Api", description = "This API extracts a single user"))
-    public User getById(@PathVariable Integer id) {
-        return repository.findById(id).get();
+    public UserDto getById(@PathVariable Integer id) {
+        return userService.getUser(id);
     }
+
     @PostMapping("/add")
     public ResponseEntity<String> createUser(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -53,9 +56,9 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute("userData") User p) {
+    public ResponseEntity<String> update(@ModelAttribute("userData") User p) {
         repository.save(p);
-        return "redirect:/";
+        return ResponseEntity.ok("User updated successfully");
     }
 
     @PatchMapping("/{id}")
@@ -64,7 +67,7 @@ public class UserController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable("id") Integer idUtente) {
+    public ResponseEntity<String> delete(@PathVariable("id") Integer idUtente) {
         if (idUtente != null) {
             Optional<User> pOptional = repository.findById(idUtente);
             if (pOptional.isPresent()) {
@@ -74,6 +77,6 @@ public class UserController {
 
             }
         }
-        return "redirect:/api/users";
+        return ResponseEntity.ok("User deleted successfully");
     }
 }

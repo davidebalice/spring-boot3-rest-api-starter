@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
-import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +47,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoriesDto);
     }
 
-   @GetMapping("/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Category's Rest Api", description = "This API extracts one Category")
     public ResponseEntity<CategoryDto> getById(@PathVariable Integer id) {
         Optional<Category> category = repository.findById(id);
@@ -62,15 +60,15 @@ public class CategoryController {
     }
 
     @PostMapping("/add")
-    public String add(@Valid @RequestBody Category p) {
+    public ResponseEntity<String> add(@Valid @RequestBody Category p) {
         repository.save(p);
-        return "redirect:/api/categories/";
+        return new ResponseEntity<>("Category addedd successfully!", HttpStatus.OK);
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute("categoryData") Category c) {
+    public ResponseEntity<String> update(@ModelAttribute("categoryData") Category c) {
         repository.save(c);
-        return "redirect:/";
+        return new ResponseEntity<>("Category updated successfully!", HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
@@ -79,8 +77,9 @@ public class CategoryController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id) {
-        return service.deleteCategory(id);
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
+        service.deleteCategory(id);
+        return new ResponseEntity<>("Category deleted successfully!", HttpStatus.OK);
     }
 
     @GetMapping("/search")

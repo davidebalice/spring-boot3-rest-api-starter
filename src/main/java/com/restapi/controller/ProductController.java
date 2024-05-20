@@ -66,9 +66,9 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public String add(@RequestBody Product p) {
+    public ResponseEntity<String> add(@RequestBody Product p) {
         repository.save(p);
-        return "redirect:/api/products/";
+        return ResponseEntity.ok("Product added successfully");
     }
 
     @PostMapping("/update")
@@ -87,34 +87,35 @@ public class ProductController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id) {
-        return service.deleteProduct(id);
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
+        service.deleteProduct(id);
+        return ResponseEntity.ok("Product deleted successfully");
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam("keyword") String keyword) {
         List<Product> products = service.searchProducts(keyword);
-        List<ProductDto> productDtos = products.stream()
+        List<ProductDto> productsDto = products.stream()
                 .map(ProductMapper::mapToProductDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(productDtos);
+        return ResponseEntity.ok(productsDto);
     }
 
     @GetMapping("/searchByCategoryId")
     public ResponseEntity<List<ProductDto>> searchProductsByCategoryId(@RequestParam int categoryId) {
         List<Product> products = service.searchProductsByCategoryId(categoryId);
-        List<ProductDto> productDtos = products.stream()
+        List<ProductDto> productsDto = products.stream()
                 .map(ProductMapper::mapToProductDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(productDtos);
+        return ResponseEntity.ok(productsDto);
     }
 
     @GetMapping("/stream-test")
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         List<Product> products = service.getAllProducts();
-        List<ProductDto> productDtos = products.stream()
+        List<ProductDto> productsDto = products.stream()
                 .map(ProductMapper::mapToProductDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(productDtos);
+        return ResponseEntity.ok(productsDto);
     }
 }

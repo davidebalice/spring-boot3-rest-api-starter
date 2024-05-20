@@ -1,6 +1,7 @@
 package com.restapi.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,19 +14,18 @@ public class WelcomeController {
 
  
     @GetMapping("/")
-    public String index() {
-        return "index";
+    public ResponseEntity<String> index() {
+        return ResponseEntity.ok("Index page");
     }
 
     @GetMapping("/login")
-    public String login() {
-        return "login";
+    public ResponseEntity<String> login() {
+        return ResponseEntity.ok("Login page");
     }
 
-    @ResponseBody
     @GetMapping("/testlogin")
-    public String testlogin() {
-        return "test protected page";
+    public ResponseEntity<String> testlogin() {
+        return ResponseEntity.ok("Test protected page");
     }
 
     @GetMapping("/error")
