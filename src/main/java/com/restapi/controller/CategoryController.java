@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.restapi.dto.CategoryDto;
+import com.restapi.dto.UserDto;
 import com.restapi.mapper.CategoryMapper;
 import com.restapi.model.Category;
 import com.restapi.repository.CategoryRepository;
@@ -49,16 +50,14 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Category's Rest Api", description = "This API extracts one Category")
-    public ResponseEntity<CategoryDto> getById(@PathVariable Integer id) {
-        Optional<Category> category = repository.findById(id);
-        if (category.isPresent()) {
-            CategoryDto categoryDto = CategoryMapper.mapToCategoryDto(category.get());
-            return new ResponseEntity<>(categoryDto, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public CategoryDto getById(@PathVariable Integer id) {
+        return service.getCategoryById(id);
     }
-
+/* 
+     public UserDto getById(@PathVariable Integer id) {
+        return userService.getUser(id);
+    }
+*/
     @PostMapping("/add")
     public ResponseEntity<String> add(@Valid @RequestBody Category p) {
         repository.save(p);

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.restapi.dto.UserDto;
+import com.restapi.exception.ResourceNotFoundException;
 import com.restapi.model.User;
 import com.restapi.repository.UserRepository;
 import com.restapi.service.UserInfoDetails;
@@ -90,8 +91,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUser(int id) {
-        Optional<User> user = repository.findById(id);
+    public UserDto getUser(int userId) {
+        User user = repository.findById(userId).orElseThrow(
+            () -> new ResourceNotFoundException("User", "id", userId)
+    );
         return modelMapper.map(user, UserDto.class);
     }
 }

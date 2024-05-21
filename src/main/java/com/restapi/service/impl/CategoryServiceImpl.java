@@ -3,10 +3,14 @@ package com.restapi.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.restapi.dto.CategoryDto;
+import com.restapi.exception.ResourceNotFoundException;
 import com.restapi.model.Category;
 import com.restapi.repository.CategoryRepository;
 import com.restapi.service.CategoryService;
@@ -16,13 +20,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository repository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public CategoryServiceImpl(CategoryRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public Category getCategoryById(int categoryId) {
-        return repository.findById(categoryId).orElse(null);
+    public CategoryDto getCategoryById(int categoryId) {
+        Category category = repository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "id", categoryId));
+        return modelMapper.map(category, CategoryDto.class);
     }
 
     @Override
