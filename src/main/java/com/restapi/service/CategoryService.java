@@ -10,6 +10,6 @@ import com.restapi.model.Category;
 public interface CategoryService {
     CategoryDto getCategoryById(int categoryId);
     ResponseEntity<String> updateCategory(int id, Category updateCategory);
-    String deleteCategory(Integer idCategory);
+    ResponseEntity<String> deleteCategory(Integer idCategory);
     List<Category> searchCategories(String keyword);
 }

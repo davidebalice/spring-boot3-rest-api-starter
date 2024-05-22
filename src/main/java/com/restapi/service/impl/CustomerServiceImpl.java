@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.restapi.exception.ResourceNotFoundException;
 import com.restapi.model.Customer;
 import com.restapi.repository.CustomerRepository;
 import com.restapi.service.CustomerService;
@@ -53,15 +54,15 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String deleteCustomer(Integer idCustomer) {
-        if (idCustomer != null) {
-            Optional<Customer> pOptional = repository.findById(idCustomer);
-            if (pOptional.isPresent()) {
-                Customer c = pOptional.get();
-                repository.delete(c);
-            }
+    public ResponseEntity<String> deleteCustomer(Integer customerId) {
+        Optional<Customer> pOptional = repository.findById(customerId);
+        if (pOptional.isPresent()) {
+            Customer c = pOptional.get();
+            repository.delete(c);
+            return new ResponseEntity<>("Customer deleted successfully", HttpStatus.OK);
+        } else {
+            throw new ResourceNotFoundException("Customer", "id", customerId);
         }
-        return "redirect:/customers";
     }
 
     @Override

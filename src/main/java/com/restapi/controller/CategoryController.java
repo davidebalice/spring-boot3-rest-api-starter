@@ -53,11 +53,7 @@ public class CategoryController {
     public CategoryDto getById(@PathVariable Integer id) {
         return service.getCategoryById(id);
     }
-/* 
-     public UserDto getById(@PathVariable Integer id) {
-        return userService.getUser(id);
-    }
-*/
+
     @PostMapping("/add")
     public ResponseEntity<String> add(@Valid @RequestBody Category p) {
         repository.save(p);

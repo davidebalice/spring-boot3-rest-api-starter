@@ -35,13 +35,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<String> updateCategory(int id, Category updateCategory) {
+    public ResponseEntity<String> updateCategory(int categoryId, Category updateCategory) {
         try {
-            if (!repository.existsById(id)) {
-                return new ResponseEntity<>("Category not found", HttpStatus.NOT_FOUND);
+            if (!repository.existsById(categoryId)) {
+                throw new ResourceNotFoundException("Category", "id", categoryId);
             }
 
-            Category existingCategory = repository.findById(id).orElse(null);
+            Category existingCategory = repository.findById(categoryId).orElse(null);
 
             if (updateCategory.getName() != null) {
                 existingCategory.setName(updateCategory.getName());
@@ -56,16 +56,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String deleteCategory(Integer idCategory) {
-        if (idCategory != null) {
-            Optional<Category> pOptional = repository.findById(idCategory);
-            if (pOptional.isPresent()) {
-                Category c = pOptional.get();
-                repository.delete(c);
-            }
+    public ResponseEntity<String> deleteCategory(Integer categoryId) {
+        Optional<Category> pOptional = repository.findById(categoryId);
+        if (pOptional.isPresent()) {
+            Category c = pOptional.get();
+            repository.delete(c);
+            return new ResponseEntity<>("Category deleted successfully", HttpStatus.OK);
+        } else {
+            throw new ResourceNotFoundException("Category", "id", categoryId);
         }
-        return "redirect:/categories";
     }
+    
 
     @Override
     public List<Category> searchCategories(String keyword) {

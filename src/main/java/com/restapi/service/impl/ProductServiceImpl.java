@@ -1,15 +1,16 @@
 package com.restapi.service.impl;
 
-import com.restapi.model.Product;
-import com.restapi.repository.ProductRepository;
-import com.restapi.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.restapi.exception.ResourceNotFoundException;
+import com.restapi.model.Product;
+import com.restapi.repository.ProductRepository;
+import com.restapi.service.ProductService;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -56,15 +57,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String deleteProduct(Integer idProduct) {
-        if (idProduct != null) {
-            Optional<Product> pOptional = repository.findById(idProduct);
-            if (pOptional.isPresent()) {
-                Product p = pOptional.get();
-                repository.delete(p);
-            }
+    public ResponseEntity<String> deleteProduct(Integer productId) {
+        Optional<Product> pOptional = repository.findById(productId);
+        if (pOptional.isPresent()) {
+            Product p = pOptional.get();
+            repository.delete(p);
+            return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
+        } else {
+            throw new ResourceNotFoundException("Customer", "id", productId);
         }
-        return "redirect:/product";
     }
 
     @Override
@@ -82,4 +83,3 @@ public class ProductServiceImpl implements ProductService {
         return repository.findAll();
     }
 }
-
