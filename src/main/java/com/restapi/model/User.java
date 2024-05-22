@@ -29,25 +29,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Name should not be empty")
     @Column(name = "name")
     private String name;
 
-    @NotBlank(message = "Surname is mandatory")
+    @NotBlank(message = "Surname should not be empty")
     private String surname;
 
     @Column(name = "username")
     private String username;
 
-    @NotBlank(message = "Email is mandatory")
+    @NotBlank(message = "Email should not be empty")
     @Email(message = "Email should be valid")
     @Column(name = "email", nullable = false)
     private String email;
 
-    @NotBlank(message = "Password is mandatory")
+    @NotBlank(message = "Password should not be empty")
     private String password;
 
-    @NotBlank(message = "Role is mandatory")
+    @NotBlank(message = "Role should not be empty")
     private String role;
 
     @Column(name = "created_at")

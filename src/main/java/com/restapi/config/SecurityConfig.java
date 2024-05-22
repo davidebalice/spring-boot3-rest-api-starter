@@ -95,7 +95,7 @@ public class SecurityConfig {
 				.authenticationProvider(authenticationProvider())
 				.csrf(csrf -> csrf
 						.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**", "POST"))
-						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "GET"),
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "POST"),
 								new AntPathRequestMatcher("/api/v1/login", "POST")))
 
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)

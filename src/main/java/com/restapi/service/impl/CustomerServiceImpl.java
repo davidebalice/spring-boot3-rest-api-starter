@@ -23,7 +23,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomerById(int customerId) {
-        return repository.findById(customerId).orElse(null);
+        return repository.findById(customerId).orElseThrow(
+            () -> new ResourceNotFoundException("Customer", "id", customerId)
+        );
     }
 
     @Override

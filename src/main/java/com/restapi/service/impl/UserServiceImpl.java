@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUser(int userId) {
         User user = repository.findById(userId).orElseThrow(
             () -> new ResourceNotFoundException("User", "id", userId)
-    );
+        );
         return modelMapper.map(user, UserDto.class);
     }
 }
