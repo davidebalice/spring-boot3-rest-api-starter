@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.restapi.security.AuthRequest;
 import com.restapi.security.JwtService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(
+        name = "REST APIs for Login",
+        description = "User Login and Jwt Token Generation"
+)
 @RestController
 @RequestMapping("/api/v1/")
 public class AuthController {

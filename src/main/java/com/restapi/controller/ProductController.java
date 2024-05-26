@@ -85,6 +85,7 @@ public class ProductController {
     }
     //
 
+
     //Get single Product Rest Api (get id by querystring)
     //http://localhost:8081/api/v1/product?id=1
     @Operation(
@@ -100,6 +101,7 @@ public class ProductController {
         return service.getProductById(id);
     }
     //
+
 
     //Add new Product Rest Api
     //http://localhost:8081/api/v1/products/add
@@ -117,6 +119,7 @@ public class ProductController {
         return ResponseEntity.ok("Product added successfully");
     }
     //
+
 
     //Update Product Rest Api
     //http://localhost:8081/api/v1/products/1
@@ -157,7 +160,7 @@ public class ProductController {
 
 
     //Search Product Rest Api
-    //http://localhost:8081/api/v1/search
+    //http://localhost:8081/api/v1/products/search
     @Operation(
         summary = "Search Product REST API",
         description = "Search Product on database by filter"
@@ -178,7 +181,7 @@ public class ProductController {
 
 
     //Search Product by Category Rest Api
-    //http://localhost:8081/api/v1/searchByCategoryId
+    //http://localhost:8081/api/v1/products/searchByCategoryId
     @Operation(
         summary = "Search Product by Category Api REST API",
         description = "Search Product by Category Api on database by id"
@@ -199,7 +202,7 @@ public class ProductController {
 
 
     //Get all products Rest Api and obtain a stream data
-    //http://localhost:8081/api/v1/products
+    //http://localhost:8081/api/v1/products/stream-test
     @Operation(summary = "Get all products", description = "Retrieve a list of all products")
     @ApiResponse(
         responseCode = "200",
