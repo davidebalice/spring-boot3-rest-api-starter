@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.restapi</groupId>
 	<artifactId>restapi</artifactId>
-	<version>0.0.5</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 	<name>restapi</name>
 	<description>Rest Api start template</description>
