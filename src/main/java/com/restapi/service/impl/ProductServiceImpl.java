@@ -24,7 +24,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductById(int productId) {
         return repository.findById(productId).orElseThrow(
-            () -> new ResourceNotFoundException("Product", "id", productId)
+            () -> new ResourceNotFoundException("Product", "id")
+        );
+    }
+
+    @Override
+    public Product getProductBySku(String sku) {
+        return repository.findBySku(sku).orElseThrow(
+            () -> new ResourceNotFoundException("Product", "sku")
         );
     }
 
@@ -66,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
             repository.delete(p);
             return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
         } else {
-            throw new ResourceNotFoundException("Product", "id", productId);
+            throw new ResourceNotFoundException("Product", "id");
         }
     }
 

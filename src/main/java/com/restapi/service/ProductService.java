@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ProductService {
     Product getProductById(int productId);
+    Product getProductBySku(String sku);
     ResponseEntity<String> updateProduct(int id, Product updatedProduct);
     ResponseEntity<String> deleteProduct(Integer idProduct);
     List<Product> searchProducts(String keyword);

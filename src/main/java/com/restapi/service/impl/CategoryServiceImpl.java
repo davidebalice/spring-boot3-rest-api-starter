@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto getCategoryById(int categoryId) {
         Category category = repository.findById(categoryId).orElseThrow(
-                () -> new ResourceNotFoundException("Category", "id", categoryId));
+                () -> new ResourceNotFoundException("Category", "id"));
         return modelMapper.map(category, CategoryDto.class);
     }
 
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<String> updateCategory(int categoryId, Category updateCategory) {
         try {
             if (!repository.existsById(categoryId)) {
-                throw new ResourceNotFoundException("Category", "id", categoryId);
+                throw new ResourceNotFoundException("Category", "id");
             }
 
             Category existingCategory = repository.findById(categoryId).orElse(null);
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
             repository.delete(c);
             return new ResponseEntity<>("Category deleted successfully", HttpStatus.OK);
         } else {
-            throw new ResourceNotFoundException("Category", "id", categoryId);
+            throw new ResourceNotFoundException("Category", "id");
         }
     }
     

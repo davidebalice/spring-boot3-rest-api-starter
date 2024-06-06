@@ -24,7 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer getCustomerById(int customerId) {
         return repository.findById(customerId).orElseThrow(
-            () -> new ResourceNotFoundException("Customer", "id", customerId)
+            () -> new ResourceNotFoundException("Customer", "id")
         );
     }
 
@@ -63,7 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
             repository.delete(c);
             return new ResponseEntity<>("Customer deleted successfully", HttpStatus.OK);
         } else {
-            throw new ResourceNotFoundException("Customer", "id", customerId);
+            throw new ResourceNotFoundException("Customer", "id");
         }
     }
 

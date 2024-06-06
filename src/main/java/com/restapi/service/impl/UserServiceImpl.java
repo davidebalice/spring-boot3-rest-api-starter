@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUser(int userId) {
         User user = repository.findById(userId).orElseThrow(
-            () -> new ResourceNotFoundException("User", "id", userId)
+            () -> new ResourceNotFoundException("User", "id")
         );
         return modelMapper.map(user, UserDto.class);
     }

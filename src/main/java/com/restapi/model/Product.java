@@ -30,6 +30,8 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private String sku;
+
     @Column(name = "name")
     private String name;
 
@@ -43,7 +45,12 @@ public class Product {
     @Column(name = "price")
     private double price;
 
-     @Column(name = "created_at")
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    private boolean active;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
@@ -58,4 +65,6 @@ public class Product {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+
 }
