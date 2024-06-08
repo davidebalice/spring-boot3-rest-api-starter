@@ -61,8 +61,8 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("https://example.com"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost", "http://localhost:4200"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
@@ -73,6 +73,7 @@ public class SecurityConfig {
 		http.cors(cors -> cors.configurationSource(request -> {
 			List<String> allowedOrigins = new ArrayList<>();
 			allowedOrigins.add("http://localhost");
+			allowedOrigins.add("http://localhost:4200");
 			CorsConfiguration config = new CorsConfiguration();
 			config.setAllowedOrigins(allowedOrigins);
 			config.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH"));

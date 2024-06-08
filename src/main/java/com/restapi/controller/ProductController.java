@@ -85,8 +85,9 @@ public class ProductController {
     @Operation(summary = "Crate new  Product REST API", description = "Save new Product on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody Product p) {
-        repository.save(p);
+    public ResponseEntity<String> add(@RequestBody ProductDto p) {
+        //repository.save(p);
+        service.addProduct(p);
         return ResponseEntity.ok("Product added successfully");
     }
     //
@@ -96,7 +97,7 @@ public class ProductController {
     @Operation(summary = "Update Product REST API", description = "Update Product on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody Product updatedProduct) {
+    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody ProductDto updatedProduct) {
         if (!repository.existsById(id)) {
             return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
         }

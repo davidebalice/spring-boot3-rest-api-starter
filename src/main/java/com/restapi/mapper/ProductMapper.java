@@ -1,7 +1,7 @@
 package com.restapi.mapper;
 
-import com.restapi.dto.CategoryDto;
 import com.restapi.dto.ProductDto;
+import com.restapi.model.Category;
 import com.restapi.model.Product;
 
 public class ProductMapper {
@@ -13,14 +13,7 @@ public class ProductMapper {
         productDto.setName(product.getName());
         productDto.setDescription(product.getDescription());
         productDto.setPrice(product.getPrice());
-
-        // Convert Category entity to CategoryDto
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(product.getCategory().getId());
-        categoryDto.setName(product.getCategory().getName());
-        categoryDto.setDescription(product.getCategory().getDescription());
-
-        productDto.setCategory(categoryDto);
+        productDto.setIdCategory(product.getCategory().getId());
 
         return productDto;
     }
@@ -32,12 +25,12 @@ public class ProductMapper {
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
-        
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(product.getCategory().getId());
-        categoryDto.setName(product.getCategory().getName());
-        categoryDto.setDescription(product.getCategory().getDescription());
-        productDto.setCategory(categoryDto);
+
+        Category category = new Category();
+        category.setId(product.getCategory().getId());
+        category.setName(product.getCategory().getName());
+        category.setDescription(product.getCategory().getDescription());
+        product.setCategory(category);
 
         return product;
     }

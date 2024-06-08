@@ -7,8 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.restapi.dto.ProductDto;
 import com.restapi.exception.ResourceNotFoundException;
+import com.restapi.model.Category;
 import com.restapi.model.Product;
+import com.restapi.repository.CategoryRepository;
 import com.restapi.repository.ProductRepository;
 import com.restapi.service.ProductService;
 
@@ -16,27 +19,43 @@ import com.restapi.service.ProductService;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
+    private final CategoryRepository categoryRepository;
 
-    public ProductServiceImpl(ProductRepository repository) {
+    public ProductServiceImpl(ProductRepository repository, CategoryRepository categoryRepository) {
         this.repository = repository;
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Override
+    public Product addProduct(ProductDto productDto) {
+        Category category = categoryRepository.findById(productDto.getIdCategory())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        Product product = new Product();
+        product.setName(productDto.getName());
+        product.setDescription(productDto.getDescription());
+        product.setCategory(category);
+        product.setPrice(productDto.getPrice());
+        // product.setImageUrl(productDto.getImageUrl());
+        // product.setActive(productDto.isActive());
+
+        return repository.save(product);
     }
 
     @Override
     public Product getProductById(int productId) {
         return repository.findById(productId).orElseThrow(
-            () -> new ResourceNotFoundException("Product", "id")
-        );
+                () -> new ResourceNotFoundException("Product", "id"));
     }
 
     @Override
     public Product getProductBySku(String sku) {
         return repository.findBySku(sku).orElseThrow(
-            () -> new ResourceNotFoundException("Product", "sku")
-        );
+                () -> new ResourceNotFoundException("Product", "sku"));
     }
 
     @Override
-    public ResponseEntity<String> updateProduct(int id, Product updatedProduct) {
+    public ResponseEntity<String> updateProduct(int id, ProductDto updatedProduct) {
         try {
             if (!repository.existsById(id)) {
                 return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
@@ -50,8 +69,11 @@ public class ProductServiceImpl implements ProductService {
             if (updatedProduct.getDescription() != null) {
                 existingProduct.setDescription(updatedProduct.getDescription());
             }
-            if (updatedProduct.getCategory() != null) {
-                existingProduct.setCategory(updatedProduct.getCategory());
+            if (updatedProduct.getIdCategory() >= 1) {
+                Category category = categoryRepository.findById(updatedProduct.getIdCategory())
+                        .orElseThrow(() -> new RuntimeException("Category not found"));
+
+                existingProduct.setCategory(category);
             }
             if (updatedProduct.getPrice() != 0.0) {
                 existingProduct.setPrice(updatedProduct.getPrice());
