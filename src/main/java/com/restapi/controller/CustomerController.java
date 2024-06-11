@@ -2,6 +2,7 @@ package com.restapi.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,7 +84,7 @@ public class CustomerController {
     @PostMapping("/add")
     public ResponseEntity<String> add(@Valid @RequestBody Customer p) {
         repository.save(p);
-        return ResponseEntity.ok("Customer added successfully");
+        return new ResponseEntity<>("Customer addedd successfully!", HttpStatus.CREATED);
     }
     //
 
@@ -115,7 +116,7 @@ public class CustomerController {
             responseCode = "200",
             description = "HTTP Status 200 SUCCESS"
     )
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
         service.deleteCustomer(id);
         return ResponseEntity.ok("Customer deleted successfully");

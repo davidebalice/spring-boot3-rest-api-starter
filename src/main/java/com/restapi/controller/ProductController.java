@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "CRUD REST APIs for Product Resource", description = "PRODUCTS CRUD REST APIs - Create Product, Update Product, Get Product, Get All Products, Delete Product")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/products/")
 public class ProductController {
@@ -86,9 +88,8 @@ public class ProductController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody ProductDto p) {
-        //repository.save(p);
         service.addProduct(p);
-        return ResponseEntity.ok("Product added successfully");
+        return new ResponseEntity<>("Product addedd successfully!", HttpStatus.CREATED);
     }
     //
 
@@ -109,7 +110,7 @@ public class ProductController {
     // http://localhost:8081/api/v1/products/1
     @Operation(summary = "Delete Product REST API", description = "Delete Product on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
         service.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");

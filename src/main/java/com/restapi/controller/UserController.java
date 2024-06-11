@@ -121,7 +121,7 @@ public class UserController {
             responseCode = "200",
             description = "HTTP Status 200 SUCCESS"
     )
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") Integer idUtente) {
         if (idUtente != null) {
             Optional<User> pOptional = repository.findById(idUtente);
