@@ -32,7 +32,10 @@ CREATE TABLE `api_customer` (
   `email` varchar(100) DEFAULT NULL,
   `tel` varchar(100) DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL
+  `password` varchar(100) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -50,8 +53,16 @@ CREATE TABLE `api_product` (
   `name` varchar(100) DEFAULT NULL,
   `id_category` int(11) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `price` double(8,2) DEFAULT NULL
+  `price` double(8,2) DEFAULT NULL,
+  `image_url` varchar(200) DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+
+
 
 
 
@@ -71,8 +82,20 @@ CREATE TABLE `api_user` (
   `email` varchar(200) DEFAULT NULL,
   `password` varchar(250) DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
-  `role` varchar(100) NOT NULL
+  `role` varchar(100) NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `birthdate` date DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `phone_number` varchar(50) DEFAULT NULL,
+  `profile_image_url` varchar(200) DEFAULT NULL,
+  `last_access` date DEFAULT NULL,
+  `authentication_token` varchar(200) DEFAULT NULL,
+  `password_reset_token` int(200) DEFAULT NULL,
+  `login_attempts` int(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 

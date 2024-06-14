@@ -22,6 +22,7 @@ import com.restapi.mapper.ProductMapper;
 import com.restapi.model.Product;
 import com.restapi.repository.ProductRepository;
 import com.restapi.service.ProductService;
+import com.restapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -87,9 +88,9 @@ public class ProductController {
     @Operation(summary = "Crate new  Product REST API", description = "Save new Product on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody ProductDto p) {
+    public ResponseEntity<FormatResponse> add(@RequestBody ProductDto p) {
         service.addProduct(p);
-        return new ResponseEntity<>("Product addedd successfully!", HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Product added successfully!"), HttpStatus.CREATED);
     }
     //
 
@@ -98,9 +99,9 @@ public class ProductController {
     @Operation(summary = "Update Product REST API", description = "Update Product on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody ProductDto updatedProduct) {
+    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody ProductDto updatedProduct) {
         if (!repository.existsById(id)) {
-            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Product not found"), HttpStatus.NOT_FOUND);
         }
         return service.updateProduct(id, updatedProduct);
     }
@@ -111,9 +112,9 @@ public class ProductController {
     @Operation(summary = "Delete Product REST API", description = "Delete Product on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Integer id) {
+    public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
         service.deleteProduct(id);
-        return ResponseEntity.ok("Product deleted successfully");
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Product deleted successfully!"), HttpStatus.OK);
     }
     //
 

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.restapi.model.Customer;
 import com.restapi.repository.CustomerRepository;
 import com.restapi.service.CustomerService;
+import com.restapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -82,9 +83,9 @@ public class CustomerController {
             description = "HTTP Status 201 Created"
     )
     @PostMapping("/add")
-    public ResponseEntity<String> add(@Valid @RequestBody Customer p) {
+    public ResponseEntity<FormatResponse> add(@Valid @RequestBody Customer p) {
         repository.save(p);
-        return new ResponseEntity<>("Customer addedd successfully!", HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Customer addedd successfully!"), HttpStatus.CREATED);
     }
     //
 
@@ -100,7 +101,7 @@ public class CustomerController {
             description = "HTTP Status 200 SUCCESS"
     )
     @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody Customer updatedCustomer) {
+    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody Customer updatedCustomer) {
         return service.updateCustomer(id, updatedCustomer);
     }
     //
@@ -117,9 +118,9 @@ public class CustomerController {
             description = "HTTP Status 200 SUCCESS"
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Integer id) {
+    public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
         service.deleteCustomer(id);
-        return ResponseEntity.ok("Customer deleted successfully");
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Customer deleted successfully!"), HttpStatus.OK);
     }
     //
 

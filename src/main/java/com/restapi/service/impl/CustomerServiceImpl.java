@@ -11,6 +11,7 @@ import com.restapi.exception.ResourceNotFoundException;
 import com.restapi.model.Customer;
 import com.restapi.repository.CustomerRepository;
 import com.restapi.service.CustomerService;
+import com.restapi.utility.FormatResponse;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -29,10 +30,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<String> updateCustomer(int id, Customer updateCustomer) {
+    public ResponseEntity<FormatResponse> updateCustomer(int id, Customer updateCustomer) {
         try {
             if (!repository.existsById(id)) {
-                return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<FormatResponse>(new FormatResponse("Customer not found"),
+                    HttpStatus.NOT_FOUND);
             }
 
             Customer existingCustomer = repository.findById(id).get();
@@ -49,9 +51,11 @@ public class CustomerServiceImpl implements CustomerService {
 
             repository.save(existingCustomer);
 
-            return new ResponseEntity<>("Customer updated successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Customer updated successfully!"),
+                    HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error updating customer", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updated customer!"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springdoc.core.annotations.RouterOperation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import com.restapi.dto.UserDto;
 import com.restapi.model.User;
 import com.restapi.repository.UserRepository;
 import com.restapi.service.UserService;
+import com.restapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -86,10 +88,10 @@ public class UserController {
             description = "HTTP Status 201 Created"
     )
     @PostMapping("/add")
-    public ResponseEntity<String> createUser(@RequestBody User user) {
+    public ResponseEntity<FormatResponse> createUser(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
-        return ResponseEntity.ok("User created successfully");
+        return new ResponseEntity<FormatResponse>(new FormatResponse("User created successfully!"), HttpStatus.OK);
     }
     //
 
@@ -105,7 +107,7 @@ public class UserController {
             description = "HTTP Status 200 SUCCESS"
     )
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody User updateUser) {
+    public ResponseEntity<FormatResponse> updateUser(@PathVariable int id, @RequestBody User updateUser) {
         return userService.updateUser(id, updateUser);
     }
     //
@@ -122,7 +124,7 @@ public class UserController {
             description = "HTTP Status 200 SUCCESS"
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Integer idUtente) {
+    public ResponseEntity<FormatResponse> delete(@PathVariable("id") Integer idUtente) {
         if (idUtente != null) {
             Optional<User> pOptional = repository.findById(idUtente);
             if (pOptional.isPresent()) {
@@ -132,7 +134,7 @@ public class UserController {
 
             }
         }
-        return ResponseEntity.ok("User deleted successfully");
+        return new ResponseEntity<FormatResponse>(new FormatResponse("User deleted successfully!"), HttpStatus.OK);
     }
     //
 }

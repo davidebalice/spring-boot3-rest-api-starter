@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 
 import com.restapi.dto.CategoryDto;
 import com.restapi.model.Category;
+import com.restapi.utility.FormatResponse;
 @Service
 public interface CategoryService {
     CategoryDto getCategoryById(int categoryId);
-    ResponseEntity<String> updateCategory(int id, Category updateCategory);
-    ResponseEntity<String> deleteCategory(Integer idCategory);
+    ResponseEntity<FormatResponse> updateCategory(int id, Category updateCategory);
+    ResponseEntity<FormatResponse> deleteCategory(Integer idCategory);
     List<Category> searchCategories(String keyword);
 }

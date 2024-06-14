@@ -14,6 +14,7 @@ import com.restapi.model.Product;
 import com.restapi.repository.CategoryRepository;
 import com.restapi.repository.ProductRepository;
 import com.restapi.service.ProductService;
+import com.restapi.utility.FormatResponse;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -55,10 +56,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<String> updateProduct(int id, ProductDto updatedProduct) {
+    public ResponseEntity<FormatResponse> updateProduct(int id, ProductDto updatedProduct) {
         try {
             if (!repository.existsById(id)) {
-                return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<FormatResponse>(new FormatResponse("Product not found"), HttpStatus.NOT_FOUND);
             }
 
             Product existingProduct = repository.findById(id).get();
@@ -81,19 +82,19 @@ public class ProductServiceImpl implements ProductService {
 
             repository.save(existingProduct);
 
-            return new ResponseEntity<>("Product updated successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Product updated successfully!"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error updating product", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating product"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> deleteProduct(Integer productId) {
+    public ResponseEntity<FormatResponse> deleteProduct(Integer productId) {
         Optional<Product> pOptional = repository.findById(productId);
         if (pOptional.isPresent()) {
             Product p = pOptional.get();
             repository.delete(p);
-            return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Product deleted successfully"), HttpStatus.OK);
         } else {
             throw new ResourceNotFoundException("Product", "id");
         }

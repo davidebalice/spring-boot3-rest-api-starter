@@ -2,6 +2,7 @@ package com.restapi.service;
 
 import com.restapi.dto.ProductDto;
 import com.restapi.model.Product;
+import com.restapi.utility.FormatResponse;
 
 import java.util.List;
 
@@ -12,8 +13,8 @@ public interface ProductService {
     Product addProduct(ProductDto p);
     Product getProductById(int productId);
     Product getProductBySku(String sku);
-    ResponseEntity<String> updateProduct(int id, ProductDto updatedProduct);
-    ResponseEntity<String> deleteProduct(Integer idProduct);
+    ResponseEntity<FormatResponse> updateProduct(int id, ProductDto updatedProduct);
+    ResponseEntity<FormatResponse> deleteProduct(Integer idProduct);
     List<Product> searchProducts(String keyword);
     List<Product> searchProductsByCategoryId(int categoryId);
     List<Product> getAllProducts();

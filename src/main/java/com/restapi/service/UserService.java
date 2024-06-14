@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.restapi.dto.UserDto;
 import com.restapi.model.User;
+import com.restapi.utility.FormatResponse;
 
 @Service
 public interface UserService extends UserDetailsService {
@@ -15,5 +16,5 @@ public interface UserService extends UserDetailsService {
     UserDto getUser(int id);
     ResponseEntity<String> addUser(User user);
     ResponseEntity<String> createUser(UserDto user);
-    ResponseEntity<String> updateUser(int id, User updateUser);
+    ResponseEntity<FormatResponse> updateUser(int id, User updateUser);
 }

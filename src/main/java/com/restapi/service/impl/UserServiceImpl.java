@@ -19,6 +19,7 @@ import com.restapi.model.User;
 import com.restapi.repository.UserRepository;
 import com.restapi.service.UserInfoDetails;
 import com.restapi.service.UserService;
+import com.restapi.utility.FormatResponse;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -54,11 +55,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<String> updateUser(int id, User updateUser) {
+    public ResponseEntity<FormatResponse> updateUser(int id, User updateUser) {
         try {
             Optional<User> optionalUser = repository.findById(id);
             if (!optionalUser.isPresent()) {
-                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<FormatResponse>(new FormatResponse("User not found"), HttpStatus.NOT_FOUND);
             }
 
             User existingUser = optionalUser.get();
@@ -78,9 +79,9 @@ public class UserServiceImpl implements UserService {
 
             repository.save(existingUser);
 
-            return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("User updated successfully"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Updating error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Updating error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
