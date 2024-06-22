@@ -1,11 +1,25 @@
 package com.restapi.service.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.restapi.dto.ProductDto;
 import com.restapi.exception.ResourceNotFoundException;
@@ -14,13 +28,19 @@ import com.restapi.model.Product;
 import com.restapi.repository.CategoryRepository;
 import com.restapi.repository.ProductRepository;
 import com.restapi.service.ProductService;
+import com.restapi.utility.FileUploadUtil;
 import com.restapi.utility.FormatResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public ProductServiceImpl(ProductRepository repository, CategoryRepository categoryRepository) {
         this.repository = repository;
@@ -37,7 +57,6 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
         product.setPrice(productDto.getPrice());
-        // product.setImageUrl(productDto.getImageUrl());
         // product.setActive(productDto.isActive());
 
         return repository.save(product);
@@ -59,7 +78,8 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<FormatResponse> updateProduct(int id, ProductDto updatedProduct) {
         try {
             if (!repository.existsById(id)) {
-                return new ResponseEntity<FormatResponse>(new FormatResponse("Product not found"), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<FormatResponse>(new FormatResponse("Product not found"),
+                        HttpStatus.NOT_FOUND);
             }
 
             Product existingProduct = repository.findById(id).get();
@@ -79,12 +99,17 @@ public class ProductServiceImpl implements ProductService {
             if (updatedProduct.getPrice() != 0.0) {
                 existingProduct.setPrice(updatedProduct.getPrice());
             }
+            if (updatedProduct.getImageUrl() != null) {
+                existingProduct.setImageUrl(updatedProduct.getImageUrl());
+            }
 
             repository.save(existingProduct);
 
-            return new ResponseEntity<FormatResponse>(new FormatResponse("Product updated successfully!"), HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Product updated successfully!"),
+                    HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating product"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating product"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,24 +119,74 @@ public class ProductServiceImpl implements ProductService {
         if (pOptional.isPresent()) {
             Product p = pOptional.get();
             repository.delete(p);
-            return new ResponseEntity<FormatResponse>(new FormatResponse("Product deleted successfully"), HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Product deleted successfully"),
+                    HttpStatus.OK);
         } else {
             throw new ResourceNotFoundException("Product", "id");
         }
     }
 
     @Override
-    public List<Product> searchProducts(String keyword) {
-        return repository.searchProducts(keyword);
+    public List<Product> searchProducts(String keyword, Pageable pageable) {
+        return repository.searchProducts(keyword, pageable);
     }
 
     @Override
-    public List<Product> searchProductsByCategoryId(int categoryId) {
-        return repository.findByCategoryId(categoryId);
+    public List<Product> searchProductsByCategoryId(int categoryId, Pageable pageable) {
+        return repository.findByCategoryId(categoryId, pageable);
     }
 
     @Override
     public List<Product> getAllProducts() {
         return repository.findAll();
+    }
+
+    @Override
+    public String uploadImage(int id, MultipartFile multipartFile, String uploadPath) throws IOException {
+
+        if (multipartFile == null || multipartFile.getOriginalFilename() == null) {
+            throw new IllegalArgumentException("Invalid file");
+        }
+
+        String fileName = id + "_" + StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        String uploadDir = uploadPath + "/image";
+        Path filePath = Paths.get(uploadDir, fileName);
+
+        if (Files.exists(filePath)) {
+            Files.delete(filePath);
+        }
+
+        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
+        Product recipe = getProductById(id);
+        ProductDto productDto = modelMapper.map(recipe, ProductDto.class);
+        productDto.setImageUrl(fileName);
+        updateProduct(id, productDto);
+
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/v1/recipes/image/")
+                .path(fileName)
+                .toUriString();
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadImage(String fileName, HttpServletRequest request, String uploadPath)
+            throws IOException {
+        Path filePath = Paths.get(uploadPath + "/image").resolve(fileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }

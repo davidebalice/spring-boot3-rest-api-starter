@@ -2,6 +2,8 @@ package com.restapi.controller;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +42,8 @@ public class CustomerController {
         this.service = service;
     }
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     //Get all Customers Rest Api
     //http://localhost:8081/api/v1/customers

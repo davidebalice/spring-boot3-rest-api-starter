@@ -1,9 +1,16 @@
 package com.restapi.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.restapi.dto.ProductDto;
-import com.restapi.mapper.ProductMapper;
 import com.restapi.model.Product;
 import com.restapi.repository.ProductRepository;
 import com.restapi.service.ProductService;
@@ -27,6 +34,7 @@ import com.restapi.utility.FormatResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Tag(name = "CRUD REST APIs for Product Resource", description = "PRODUCTS CRUD REST APIs - Create Product, Update Product, Get Product, Get All Products, Delete Product")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -36,6 +44,12 @@ public class ProductController {
 
     private final ProductRepository repository;
     private final ProductService service;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Value("${upload.path}")
+    private String uploadPath;
 
     public ProductController(ProductRepository repository, ProductService service) {
         this.repository = repository;
@@ -47,12 +61,18 @@ public class ProductController {
     @Operation(summary = "Get all products", description = "Retrieve a list of all products")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/")
-    public ResponseEntity<Iterable<ProductDto>> list() {
-        Iterable<Product> products = repository.findAll();
+    public ResponseEntity<Iterable<ProductDto>> list(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Iterable<Product> products = repository.findAll(pageable);
         List<ProductDto> productsDto = new ArrayList<>();
         for (Product product : products) {
-            productsDto.add(ProductMapper.mapToProductDto(product));
+            ProductDto productDto = modelMapper.map(product, ProductDto.class);
+            productsDto.add(productDto);
         }
+
         return ResponseEntity.ok(productsDto);
     }
     //
@@ -65,7 +85,7 @@ public class ProductController {
     public ResponseEntity<ProductDto> getById(@PathVariable Integer id) {
         Product product = service.getProductById(id);
         if (product != null) {
-            ProductDto productDto = ProductMapper.mapToProductDto(product);
+            ProductDto productDto = modelMapper.map(product, ProductDto.class);
             return new ResponseEntity<>(productDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -90,7 +110,8 @@ public class ProductController {
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@RequestBody ProductDto p) {
         service.addProduct(p);
-        return new ResponseEntity<FormatResponse>(new FormatResponse("Product added successfully!"), HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Product added successfully!"),
+                HttpStatus.CREATED);
     }
     //
 
@@ -126,7 +147,7 @@ public class ProductController {
     public ResponseEntity<ProductDto> getBySku(@PathVariable String sku) {
         Product product = service.getProductBySku(sku);
         if (product != null) {
-            ProductDto productDto = ProductMapper.mapToProductDto(product);
+            ProductDto productDto = modelMapper.map(product, ProductDto.class);
             return new ResponseEntity<>(productDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -139,10 +160,13 @@ public class ProductController {
     @Operation(summary = "Search Product REST API", description = "Search Product on database by filter")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam("keyword") String keyword) {
-        List<Product> products = service.searchProducts(keyword);
+    public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam("keyword") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Product> products = service.searchProducts(keyword, pageable);
         List<ProductDto> productsDto = products.stream()
-                .map(ProductMapper::mapToProductDto)
+                .map(product -> modelMapper.map(product, ProductDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(productsDto);
     }
@@ -153,10 +177,13 @@ public class ProductController {
     @Operation(summary = "Search Product by Category Api REST API", description = "Search Product by Category Api on database by id")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/searchByCategoryId")
-    public ResponseEntity<List<ProductDto>> searchProductsByCategoryId(@RequestParam int categoryId) {
-        List<Product> products = service.searchProductsByCategoryId(categoryId);
+    public ResponseEntity<List<ProductDto>> searchProductsByCategoryId(@RequestParam int categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Product> products = service.searchProductsByCategoryId(categoryId, pageable);
         List<ProductDto> productsDto = products.stream()
-                .map(ProductMapper::mapToProductDto)
+                .map(product -> modelMapper.map(product, ProductDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(productsDto);
     }
@@ -170,10 +197,34 @@ public class ProductController {
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         List<Product> products = service.getAllProducts();
         List<ProductDto> productsDto = products.stream()
-                .map(ProductMapper::mapToProductDto)
+                .map(product -> modelMapper.map(product, ProductDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(productsDto);
     }
     //
+
+    @Operation(summary = "Upload product image", description = "Upload photo of product")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @PostMapping("/{id}/uploadImage")
+    public ResponseEntity<FormatResponse> uploadImage(@PathVariable int id,
+            @RequestParam("image") MultipartFile multipartFile) {
+        try {
+            String fileDownloadUri = service.uploadImage(id, multipartFile, uploadPath);
+            return new ResponseEntity<>(new FormatResponse(fileDownloadUri), HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(new FormatResponse("Error uploading image"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Download recipe image", description = "Download photo of recipe")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @GetMapping("/image/{fileName:.+}")
+    public ResponseEntity<Resource> downloadImage(@PathVariable String fileName, HttpServletRequest request) {
+        try {
+            return service.downloadImage(fileName, request, uploadPath);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }

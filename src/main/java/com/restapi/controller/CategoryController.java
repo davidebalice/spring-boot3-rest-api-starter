@@ -3,6 +3,8 @@ package com.restapi.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.restapi.dto.CategoryDto;
-import com.restapi.mapper.CategoryMapper;
 import com.restapi.model.Category;
 import com.restapi.repository.CategoryRepository;
 import com.restapi.service.CategoryService;
@@ -40,6 +41,9 @@ public class CategoryController {
         this.service = service;
     }
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     // Get all Categories Rest Api
     // http://localhost:8081/api/v1/categories
     @Operation(summary = "Get all categories", description = "Retrieve a list of all categories")
@@ -48,7 +52,7 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDto>> list() {
         List<Category> categories = (List<Category>) repository.findAll();
         List<CategoryDto> categoriesDto = categories.stream()
-                .map(CategoryMapper::mapToCategoryDto)
+                .map(category -> modelMapper.map(category, CategoryDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(categoriesDto);
     }
@@ -71,7 +75,8 @@ public class CategoryController {
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@Valid @RequestBody Category p) {
         repository.save(p);
-        return new ResponseEntity<FormatResponse>(new FormatResponse("Category created successfully!"), HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Category created successfully!"),
+                HttpStatus.CREATED);
     }
     //
 
