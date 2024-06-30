@@ -44,16 +44,6 @@ public class RestApiApplication {
 		return new RestTemplate();
 	}
 
-	/*
-	@Bean
-    public FilterRegistrationBean<CustomLoggingFilter> loggingFilter() {
-        FilterRegistrationBean<CustomLoggingFilter> registrationBean = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(new CustomLoggingFilter());
-        registrationBean.addUrlPatterns("/*");
-
-        return registrationBean;
-    }
-	*/
+	
 	
 }

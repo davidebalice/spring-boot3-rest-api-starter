@@ -21,6 +21,7 @@ public class ProductDto {
     private int id;
     private String name;
     private String description;
+    private String sku;
     private int idCategory;
     private CategoryDto categoryDto;
     private String imageUrl;

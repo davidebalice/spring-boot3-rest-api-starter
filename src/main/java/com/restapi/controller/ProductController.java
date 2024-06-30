@@ -2,13 +2,16 @@ package com.restapi.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -61,7 +64,7 @@ public class ProductController {
     @Operation(summary = "Get all products", description = "Retrieve a list of all products")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/")
-    public ResponseEntity<Iterable<ProductDto>> list(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Map<String, Object>> list(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
@@ -73,7 +76,12 @@ public class ProductController {
             productsDto.add(productDto);
         }
 
-        return ResponseEntity.ok(productsDto);
+        Page<Product> productsPage = repository.findAll(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", productsDto);
+        response.put("totalItems", productsPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
     }
     //
 
@@ -160,7 +168,7 @@ public class ProductController {
     @Operation(summary = "Search Product REST API", description = "Search Product on database by filter")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam("keyword") String keyword,
+    public ResponseEntity<Map<String, Object>> searchProducts(@RequestParam("keyword") String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -168,7 +176,12 @@ public class ProductController {
         List<ProductDto> productsDto = products.stream()
                 .map(product -> modelMapper.map(product, ProductDto.class))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(productsDto);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", productsDto);
+        response.put("totalItems", products.size());
+
+        return ResponseEntity.ok(response);
     }
     //
 
@@ -177,7 +190,7 @@ public class ProductController {
     @Operation(summary = "Search Product by Category Api REST API", description = "Search Product by Category Api on database by id")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/searchByCategoryId")
-    public ResponseEntity<List<ProductDto>> searchProductsByCategoryId(@RequestParam int categoryId,
+    public ResponseEntity<Map<String, Object>> searchProductsByCategoryId(@RequestParam int categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -185,7 +198,12 @@ public class ProductController {
         List<ProductDto> productsDto = products.stream()
                 .map(product -> modelMapper.map(product, ProductDto.class))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(productsDto);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", productsDto);
+        response.put("totalItems", products.size());
+
+        return ResponseEntity.ok(response);
     }
     //
 
@@ -216,7 +234,7 @@ public class ProductController {
         }
     }
 
-    @Operation(summary = "Download recipe image", description = "Download photo of recipe")
+    @Operation(summary = "Download product image", description = "Download photo of product")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/image/{fileName:.+}")
     public ResponseEntity<Resource> downloadImage(@PathVariable String fileName, HttpServletRequest request) {
