@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.restapi.dto.GalleryDto;
 import com.restapi.dto.ProductDto;
 import com.restapi.model.Product;
 import com.restapi.utility.FormatResponse;
@@ -37,4 +38,8 @@ public interface ProductService {
 
     ResponseEntity<Resource> downloadImage(String fileName, HttpServletRequest request, String uploadPath)
             throws IOException;
+
+    ProductDto addGalleryToProduct(int productId, GalleryDto galleryDto);
+
+    List<String> uploadGallery(int productId, List<MultipartFile> multipartFiles, String uploadPath) throws IOException;
 }

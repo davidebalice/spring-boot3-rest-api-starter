@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.restapi.dto.ProductDto;
 import com.restapi.model.Product;
 import com.restapi.repository.ProductRepository;
+import com.restapi.security.JwtService;
 import com.restapi.service.ProductService;
 import com.restapi.utility.FormatResponse;
 
@@ -47,6 +48,8 @@ public class ProductController {
 
     private final ProductRepository repository;
     private final ProductService service;
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -244,5 +247,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    
 
 }

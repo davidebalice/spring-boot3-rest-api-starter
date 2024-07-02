@@ -58,20 +58,7 @@ public class SecurityConfig {
 		return userService;
 	}
 
-	/*
-	 * @Bean
-	 * CorsConfigurationSource corsConfigurationSource() {
-	 * CorsConfiguration configuration = new CorsConfiguration();
-	 * configuration.setAllowedOrigins(Arrays.asList("http://localhost",
-	 * "http://localhost:4200"));
-	 * configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH",
-	 * "DELETE", "OPTIONS"));
-	 * UrlBasedCorsConfigurationSource source = new
-	 * UrlBasedCorsConfigurationSource();
-	 * source.registerCorsConfiguration("/**", configuration);
-	 * return source;
-	 * }
-	 */
+	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(request -> {
@@ -91,6 +78,7 @@ public class SecurityConfig {
 								"/api/v1/csrf",
 								"swagger-ui.html", "/swagger-ui/**", "/v3/**")
 						.permitAll()
+						//.requestMatchers("/api/v1/products/image/**").permitAll()
 						.anyRequest().authenticated())
 
 				.formLogin((form) -> form

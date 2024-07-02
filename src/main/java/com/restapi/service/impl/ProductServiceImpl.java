@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,13 +22,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.restapi.dto.GalleryDto;
 import com.restapi.dto.ProductDto;
 import com.restapi.exception.ResourceNotFoundException;
 import com.restapi.model.Category;
+import com.restapi.model.Gallery;
 import com.restapi.model.Product;
 import com.restapi.repository.CategoryRepository;
+import com.restapi.repository.GalleryRepository;
 import com.restapi.repository.ProductRepository;
 import com.restapi.service.ProductService;
 import com.restapi.utility.FileUploadUtil;
@@ -38,13 +43,16 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
+    private final GalleryRepository galleryRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
-    public ProductServiceImpl(ProductRepository repository, CategoryRepository categoryRepository) {
+    public ProductServiceImpl(ProductRepository repository, CategoryRepository categoryRepository,
+            GalleryRepository galleryRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
+        this.galleryRepository = galleryRepository;
     }
 
     @Override
@@ -158,15 +166,12 @@ public class ProductServiceImpl implements ProductService {
 
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-        Product recipe = getProductById(id);
-        ProductDto productDto = modelMapper.map(recipe, ProductDto.class);
+        Product product = getProductById(id);
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
         productDto.setImageUrl(fileName);
         updateProduct(id, productDto);
 
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/v1/recipes/image/")
-                .path(fileName)
-                .toUriString();
+        return uploadDir;
     }
 
     @Override
@@ -188,5 +193,71 @@ public class ProductServiceImpl implements ProductService {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @Override
+    public ProductDto addGalleryToProduct(int productId, GalleryDto galleryDto) {
+        Optional<Product> productOpt = repository.findById(productId);
+        if (productOpt.isPresent()) {
+            Product product = productOpt.get();
+            Gallery gallery = modelMapper.map(galleryDto, Gallery.class);
+            product.addImgToGallery(gallery);
+            repository.save(product);
+            return modelMapper.map(product, ProductDto.class);
+        } else {
+            throw new RuntimeException("Product not found");
+        }
+    }
+
+    @Override
+    public List<String> uploadGallery(int productId, List<MultipartFile> multipartFiles, String uploadPath)
+            throws IOException {
+        List<String> fileDownloadUris = new ArrayList<>();
+
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        for (MultipartFile multipartFile : multipartFiles) {
+            Gallery gallery = new Gallery();
+            gallery.setTitle(multipartFile.getOriginalFilename());
+
+            String fileDownloadUri = saveGalleryImage(productId, product, gallery, multipartFile, uploadPath);
+
+            fileDownloadUris.add(fileDownloadUri);
+        }
+
+        return fileDownloadUris;
+    }
+
+    private String saveGalleryImage(int productId, Product product, Gallery gallery, MultipartFile multipartFile,
+            String uploadPath) throws IOException {
+
+        if (multipartFile == null || multipartFile.getOriginalFilename() == null) {
+            throw new IllegalArgumentException("Invalid file");
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        String fileName = timestamp + "_" + StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+        String uploadDir = uploadPath + "/gallery";
+        Path filePath = Paths.get(uploadDir, fileName);
+
+        if (Files.exists(filePath)) {
+            Files.delete(filePath);
+        }
+
+        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
+        Product prod = getProductById(productId);
+        ProductDto productDto = modelMapper.map(prod, ProductDto.class);
+        productDto.setImageUrl(fileName);
+        updateProduct(productId, productDto);
+
+        gallery.setProduct(product);
+        gallery.setUrl(fileName);
+        galleryRepository.save(gallery);
+
+        return uploadDir + "\\" + fileName;
     }
 }
