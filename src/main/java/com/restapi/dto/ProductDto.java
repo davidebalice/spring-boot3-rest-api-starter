@@ -25,7 +25,9 @@ public class ProductDto {
     private String description;
     private String sku;
     private int idCategory;
+    private int idSubcategory;
     private CategoryDto categoryDto;
+    private SubcategoryDto subcategoryDto;
     private String imageUrl;
     private double price;
     private List<GalleryDto> gallery;

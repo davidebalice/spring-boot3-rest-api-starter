@@ -29,9 +29,11 @@ import com.restapi.exception.ResourceNotFoundException;
 import com.restapi.model.Category;
 import com.restapi.model.Gallery;
 import com.restapi.model.Product;
+import com.restapi.model.Subcategory;
 import com.restapi.repository.CategoryRepository;
 import com.restapi.repository.GalleryRepository;
 import com.restapi.repository.ProductRepository;
+import com.restapi.repository.SubcategoryRepository;
 import com.restapi.service.ProductService;
 import com.restapi.utility.FileUploadUtil;
 import com.restapi.utility.FormatResponse;
@@ -43,15 +45,18 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
+    private final SubcategoryRepository subcategoryRepository;
     private final GalleryRepository galleryRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
     public ProductServiceImpl(ProductRepository repository, CategoryRepository categoryRepository,
+            SubcategoryRepository subcategoryRepository,
             GalleryRepository galleryRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
+        this.subcategoryRepository = subcategoryRepository;
         this.galleryRepository = galleryRepository;
     }
 
@@ -60,11 +65,16 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryRepository.findById(productDto.getIdCategory())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
+        Subcategory subcategory = subcategoryRepository.findById(productDto.getIdSubcategory())
+                .orElseThrow(() -> new RuntimeException("Subcategory not found"));
+
         Product product = new Product();
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
+        product.setSubcategory(subcategory);
         product.setPrice(productDto.getPrice());
+        product.setSku(productDto.getSku());
         // product.setActive(productDto.isActive());
 
         return repository.save(product);
@@ -248,11 +258,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-
-        Product prod = getProductById(productId);
-        ProductDto productDto = modelMapper.map(prod, ProductDto.class);
-        productDto.setImageUrl(fileName);
-        updateProduct(productId, productDto);
 
         gallery.setProduct(product);
         gallery.setUrl(fileName);

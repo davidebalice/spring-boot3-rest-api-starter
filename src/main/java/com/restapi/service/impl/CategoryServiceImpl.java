@@ -47,6 +47,9 @@ public class CategoryServiceImpl implements CategoryService {
             if (updateCategory.getName() != null) {
                 existingCategory.setName(updateCategory.getName());
             }
+            if (updateCategory.getDescription() != null) {
+                existingCategory.setDescription(updateCategory.getDescription());
+            }
 
             repository.save(existingCategory);
 

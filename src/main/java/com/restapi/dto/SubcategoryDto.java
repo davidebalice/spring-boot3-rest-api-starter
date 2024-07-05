@@ -1,7 +1,5 @@
 package com.restapi.dto;
 
-import java.util.List;
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryDto {
+public class SubcategoryDto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private String description;
-    private List<SubcategoryDto> subcategories;
+    private int categoryId;
 }
