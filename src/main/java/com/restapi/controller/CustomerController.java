@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restapi.config.DemoMode;
+import com.restapi.exception.DemoModeException;
 import com.restapi.model.Customer;
 import com.restapi.repository.CustomerRepository;
 import com.restapi.service.CustomerService;
@@ -37,6 +39,7 @@ public class CustomerController {
     private final CustomerRepository repository;
     private final CustomerService service;
 
+
     public CustomerController(CustomerRepository repository, CustomerService service) {
         this.repository = repository;
         this.service = service;
@@ -44,6 +47,9 @@ public class CustomerController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     //Get all Customers Rest Api
     //http://localhost:8081/api/v1/customers
@@ -88,6 +94,9 @@ public class CustomerController {
     )
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@Valid @RequestBody Customer p) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         repository.save(p);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Customer addedd successfully!"), HttpStatus.CREATED);
     }
@@ -106,6 +115,9 @@ public class CustomerController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody Customer updatedCustomer) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.updateCustomer(id, updatedCustomer);
     }
     //
@@ -123,6 +135,9 @@ public class CustomerController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteCustomer(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Customer deleted successfully!"), HttpStatus.OK);
     }

@@ -54,8 +54,9 @@ public class SubcategoryServiceImpl implements SubcategoryService {
             if (updateSubcategory.getDescription() != null) {
                 existingSubcategory.setDescription(updateSubcategory.getDescription());
             }
-            if (updateSubcategory.getCategoryId() != 0) {
-                Category category = categoryRepository.findById(updateSubcategory.getCategoryId())
+     
+            if (updateSubcategory.getIdCategory() != 0) {
+                Category category = categoryRepository.findById(updateSubcategory.getIdCategory())
                         .orElseThrow(() -> new ResourceNotFoundException("Category", "id"));
                 existingSubcategory.setCategory(category);
             }

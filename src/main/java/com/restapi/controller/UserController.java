@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springdoc.core.annotations.RouterOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restapi.config.DemoMode;
 import com.restapi.dto.UserDto;
+import com.restapi.exception.DemoModeException;
 import com.restapi.model.User;
 import com.restapi.repository.UserRepository;
 import com.restapi.service.UserService;
@@ -37,6 +40,9 @@ public class UserController {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+
+    @Autowired
+    private DemoMode demoMode;
 
     public UserController(UserRepository repository, PasswordEncoder passwordEncoder, UserService userService) {
         this.repository = repository;
@@ -89,6 +95,9 @@ public class UserController {
     )
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> createUser(@RequestBody User user) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
         return new ResponseEntity<FormatResponse>(new FormatResponse("User created successfully!"), HttpStatus.OK);
@@ -108,6 +117,9 @@ public class UserController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> updateUser(@PathVariable int id, @RequestBody User updateUser) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return userService.updateUser(id, updateUser);
     }
     //
@@ -125,6 +137,9 @@ public class UserController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable("id") Integer idUtente) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         if (idUtente != null) {
             Optional<User> pOptional = repository.findById(idUtente);
             if (pOptional.isPresent()) {

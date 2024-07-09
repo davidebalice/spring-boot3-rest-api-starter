@@ -29,7 +29,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.restapi.config.DemoMode;
 import com.restapi.dto.ProductDto;
+import com.restapi.exception.DemoModeException;
 import com.restapi.model.Product;
 import com.restapi.repository.ProductRepository;
 import com.restapi.security.JwtService;
@@ -54,6 +56,9 @@ public class ProductController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -121,6 +126,9 @@ public class ProductController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@RequestBody ProductDto p) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.addProduct(p);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Product added successfully!"),
                 HttpStatus.CREATED);
@@ -133,6 +141,9 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody ProductDto updatedProduct) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         if (!repository.existsById(id)) {
             return new ResponseEntity<FormatResponse>(new FormatResponse("Product not found"), HttpStatus.NOT_FOUND);
         }
@@ -146,6 +157,9 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteProduct(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Product deleted successfully!"), HttpStatus.OK);
     }
@@ -230,6 +244,9 @@ public class ProductController {
     @PostMapping("/{id}/uploadImage")
     public ResponseEntity<FormatResponse> uploadImage(@PathVariable int id,
             @RequestParam("image") MultipartFile multipartFile) {
+                if (demoMode.isEnabled()) {
+                    throw new DemoModeException();
+                }
         try {
             String fileDownloadUri = service.uploadImage(id, multipartFile, uploadPath);
             return new ResponseEntity<>(new FormatResponse(fileDownloadUri), HttpStatus.OK);

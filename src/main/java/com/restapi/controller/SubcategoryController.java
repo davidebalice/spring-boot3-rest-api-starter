@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restapi.config.DemoMode;
 import com.restapi.dto.SubcategoryDto;
+import com.restapi.exception.DemoModeException;
 import com.restapi.model.Subcategory;
 import com.restapi.repository.SubcategoryRepository;
 import com.restapi.service.SubcategoryService;
@@ -43,6 +45,9 @@ public class SubcategoryController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     @Operation(summary = "Get all subcategories of one category", description = "Retrieve a list of all subcategories of one category")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
@@ -70,8 +75,12 @@ public class SubcategoryController {
     @Operation(summary = "Crate new Subcategory REST API", description = "Save new Subcategory on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<FormatResponse> add(@Valid @RequestBody Subcategory p) {
-        repository.save(p);
+    public ResponseEntity<FormatResponse> add(@Valid @RequestBody Subcategory s) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
+       
+        repository.save(s);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Subcategory created successfully!"),
                 HttpStatus.CREATED);
     }
@@ -84,6 +93,9 @@ public class SubcategoryController {
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id,
             @RequestBody SubcategoryDto updatedSubcategory) {
+                if (demoMode.isEnabled()) {
+                    throw new DemoModeException();
+                }
         return service.updateSubcategory(id, updatedSubcategory);
     }
     //
@@ -94,6 +106,9 @@ public class SubcategoryController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteSubcategory(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Subcategory deleted successfully!"),
                 HttpStatus.OK);

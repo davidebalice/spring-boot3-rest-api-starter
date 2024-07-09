@@ -36,7 +36,7 @@ public class Subcategory {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "id_category")
+    @JoinColumn(name = "id_category", nullable = false)
     private Category category;
 
     @Column(name = "created_at")

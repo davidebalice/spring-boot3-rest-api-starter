@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.restapi.config.DemoMode;
 import com.restapi.dto.GalleryDto;
 import com.restapi.dto.ProductGalleryDto;
+import com.restapi.exception.DemoModeException;
 import com.restapi.model.Product;
 import com.restapi.service.ProductService;
 
@@ -26,6 +28,9 @@ public class GalleryController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private DemoMode demoMode;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -43,6 +48,9 @@ public class GalleryController {
     @PostMapping("/{productId}/gallery/upload")
     public ResponseEntity<List<String>> uploadGalleryImages(@PathVariable int productId,
             @RequestParam("images") List<MultipartFile> multipartFiles) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         try {
             List<String> fileDownloadUris = productService.uploadGallery(productId, multipartFiles, uploadPath);
             return ResponseEntity.ok(fileDownloadUris);

@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restapi.config.DemoMode;
 import com.restapi.dto.CategoryDto;
+import com.restapi.exception.DemoModeException;
 import com.restapi.model.Category;
 import com.restapi.repository.CategoryRepository;
 import com.restapi.service.CategoryService;
@@ -43,6 +45,9 @@ public class CategoryController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     // Get all Categories Rest Api
     // http://localhost:8081/api/v1/categories
@@ -74,6 +79,9 @@ public class CategoryController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@Valid @RequestBody Category p) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         repository.save(p);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Category created successfully!"),
                 HttpStatus.CREATED);
@@ -86,6 +94,9 @@ public class CategoryController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody Category updatedCategory) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.updateCategory(id, updatedCategory);
     }
     //
@@ -96,6 +107,9 @@ public class CategoryController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteCategory(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Category deleted successfully!"), HttpStatus.OK);
 
