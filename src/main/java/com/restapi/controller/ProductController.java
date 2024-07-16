@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -33,6 +34,8 @@ import com.restapi.config.DemoMode;
 import com.restapi.dto.ProductDto;
 import com.restapi.exception.DemoModeException;
 import com.restapi.model.Product;
+import com.restapi.model.ProductAttribute;
+import com.restapi.repository.ProductAttributeRepository;
 import com.restapi.repository.ProductRepository;
 import com.restapi.security.JwtService;
 import com.restapi.service.ProductService;
@@ -50,6 +53,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ProductController {
 
     private final ProductRepository repository;
+    private final ProductAttributeRepository productAttributeRepository;
     private final ProductService service;
     @Autowired
     private JwtService jwtService;
@@ -63,8 +67,10 @@ public class ProductController {
     @Value("${upload.path}")
     private String uploadPath;
 
-    public ProductController(ProductRepository repository, ProductService service) {
+    public ProductController(ProductRepository repository, ProductAttributeRepository productAttributeRepository,
+            ProductService service) {
         this.repository = repository;
+        this.productAttributeRepository = productAttributeRepository;
         this.service = service;
     }
 
@@ -126,7 +132,7 @@ public class ProductController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@RequestBody ProductDto p) {
-         if (demoMode.isEnabled()) {
+        if (demoMode.isEnabled()) {
             throw new DemoModeException();
         }
         service.addProduct(p);
@@ -244,9 +250,9 @@ public class ProductController {
     @PostMapping("/{id}/uploadImage")
     public ResponseEntity<FormatResponse> uploadImage(@PathVariable int id,
             @RequestParam("image") MultipartFile multipartFile) {
-                if (demoMode.isEnabled()) {
-                    throw new DemoModeException();
-                }
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         try {
             String fileDownloadUri = service.uploadImage(id, multipartFile, uploadPath);
             return new ResponseEntity<>(new FormatResponse(fileDownloadUri), HttpStatus.OK);
@@ -266,6 +272,39 @@ public class ProductController {
         }
     }
 
-    
+    @PostMapping("/{id}/attributes")
+    public ResponseEntity<FormatResponse> addAttributeToProduct(@PathVariable int id,
+            @RequestBody ProductAttribute productAttribute) {
+        Optional<Product> optionalProduct = repository.findById(id);
+        if (!optionalProduct.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Product product = optionalProduct.get();
+
+        productAttribute.setProduct(product);
+        /*
+         * try {
+         * productAttributeRepository.save(productAttribute);
+         * } catch (DataIntegrityViolationException e) {
+         * return new ResponseEntity<FormatResponse>(
+         * new FormatResponse("Attribute combination already exists for this product."),
+         * HttpStatus.CONFLICT);
+         * }
+         */
+
+        Optional<ProductAttribute> existingAttribute = productAttributeRepository
+                .findByProductAndAttributeAndAttributeValue(
+                        product, productAttribute.getAttribute(), productAttribute.getAttributeValue());
+
+        if (existingAttribute.isPresent()) {
+            return new ResponseEntity<FormatResponse>(
+                    new FormatResponse("Attribute combination already exists for this product."), HttpStatus.CONFLICT);
+        }
+
+        productAttributeRepository.save(productAttribute);
+
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Attribute assigned to product"), HttpStatus.OK);
+    }
 
 }

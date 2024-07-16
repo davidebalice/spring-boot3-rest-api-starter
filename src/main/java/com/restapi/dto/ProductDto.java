@@ -1,6 +1,9 @@
 package com.restapi.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.restapi.model.ProductAttribute;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,4 +34,5 @@ public class ProductDto {
     private String imageUrl;
     private double price;
     private List<GalleryDto> gallery;
+    private List<ProductAttribute> attributes = new ArrayList<>();
 }
