@@ -11,7 +11,7 @@ public class UserMapper {
                 user.getId(),
                 user.getName(),
                 user.getSurname(),
-                user.getEmail(), user.getPassword(), user.getRole());
+                user.getEmail(), user.getPassword(), user.getRole(), null);
         return userDto;
     }
 
@@ -19,7 +19,7 @@ public class UserMapper {
     public static User mapToUser(UserDto userDto) {
         User user = new User(
                 userDto.getId(),
-                userDto.getSurname(),
+                userDto.getName(),
                 userDto.getSurname(),
                 userDto.getEmail(),
                 userDto.getPassword(),

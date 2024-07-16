@@ -265,4 +265,25 @@ public class ProductServiceImpl implements ProductService {
 
         return uploadDir + "\\" + fileName;
     }
+
+    @Override
+    public ResponseEntity<Resource> downloadGallery(String fileName, HttpServletRequest request, String uploadPath)
+            throws IOException {
+        Path filePath = Paths.get(uploadPath + "/gallery").resolve(fileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
 }

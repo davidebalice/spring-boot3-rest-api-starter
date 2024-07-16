@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<FormatResponse> updateUser(int id, User updateUser) {
+    public ResponseEntity<FormatResponse> updateUser(int id, UserDto updateUser) {
         try {
             Optional<User> optionalUser = repository.findById(id);
             if (!optionalUser.isPresent()) {
@@ -81,7 +81,8 @@ public class UserServiceImpl implements UserService {
 
             return new ResponseEntity<FormatResponse>(new FormatResponse("User updated successfully"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<FormatResponse>(new FormatResponse("Updating error"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Updating error"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,8 +95,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUser(int userId) {
         User user = repository.findById(userId).orElseThrow(
-            () -> new ResourceNotFoundException("User", "id")
-        );
+                () -> new ResourceNotFoundException("User", "id"));
         return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public ResponseEntity<User> getUserByUsername(String username) {
+        Optional<User> optionalUser = repository.findByUsername(username);
+    
+        if (optionalUser.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    
+        User user = optionalUser.get();
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

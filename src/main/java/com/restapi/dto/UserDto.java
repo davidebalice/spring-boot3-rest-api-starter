@@ -1,6 +1,5 @@
 package com.restapi.dto;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +28,7 @@ public class UserDto {
     @Email(message = "Email should be valid")
     private String email;
 
+    private String username;
     private String password;
     private String role;
-
 }

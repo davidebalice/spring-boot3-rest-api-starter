@@ -39,6 +39,9 @@ public interface ProductService {
     ResponseEntity<Resource> downloadImage(String fileName, HttpServletRequest request, String uploadPath)
             throws IOException;
 
+    ResponseEntity<Resource> downloadGallery(String fileName, HttpServletRequest request, String uploadPath)
+            throws IOException;
+
     ProductDto addGalleryToProduct(int productId, GalleryDto galleryDto);
 
     List<String> uploadGallery(int productId, List<MultipartFile> multipartFiles, String uploadPath) throws IOException;

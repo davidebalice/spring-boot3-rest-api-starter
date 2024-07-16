@@ -13,8 +13,14 @@ import com.restapi.utility.FormatResponse;
 @Service
 public interface UserService extends UserDetailsService {
     List<UserDto> getAllUsers();
+
     UserDto getUser(int id);
+
     ResponseEntity<String> addUser(User user);
+
     ResponseEntity<String> createUser(UserDto user);
-    ResponseEntity<FormatResponse> updateUser(int id, User updateUser);
+
+    ResponseEntity<FormatResponse> updateUser(int id, UserDto updateUser);
+    
+    ResponseEntity<User> getUserByUsername(String username);
 }

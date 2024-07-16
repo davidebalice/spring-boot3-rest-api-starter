@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,10 @@ import com.restapi.dto.ProductGalleryDto;
 import com.restapi.exception.DemoModeException;
 import com.restapi.model.Product;
 import com.restapi.service.ProductService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1/products/")
@@ -56,6 +62,17 @@ public class GalleryController {
             return ResponseEntity.ok(fileDownloadUris);
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(List.of("Error uploading gallery images"));
+        }
+    }
+
+    @Operation(summary = "Download product image", description = "Download photo of product")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @GetMapping("/gallery/{fileName:.+}")
+    public ResponseEntity<Resource> downloadImage(@PathVariable String fileName, HttpServletRequest request) {
+        try {
+            return productService.downloadGallery(fileName, request, uploadPath);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
