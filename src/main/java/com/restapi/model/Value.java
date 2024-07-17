@@ -1,5 +1,6 @@
 package com.restapi.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,12 +19,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class AttributeValue {
+public class Value {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+    private int id;
+
     private String value;
+
+    @Column(name = "attribute_id", insertable = false, updatable = false)
+    private int idAttribute;
     
     @ManyToOne
     @JoinColumn(name = "attribute_id")

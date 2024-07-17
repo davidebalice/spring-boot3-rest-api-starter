@@ -116,15 +116,4 @@ public class SubcategoryController {
     }
     //
 
-    // Search Subcategory Rest Api
-    // http://localhost:8081/api/v1/subcategories/search
-    @Operation(summary = "Search Subcategory REST API", description = "Search Subcategory on database by filter")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @GetMapping("/search")
-    public List<Subcategory> searchCategories(@RequestParam("keyword") String keyword) {
-        List<Subcategory> subcategories = service.searchSubcategories(keyword);
-        return subcategories;
-    }
-    //
-
 }

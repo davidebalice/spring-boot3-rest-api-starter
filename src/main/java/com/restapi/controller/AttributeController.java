@@ -55,11 +55,6 @@ public class AttributeController {
     @GetMapping("/")
     public ResponseEntity<List<Attribute>> list() {
         List<Attribute> attributes = (List<Attribute>) repository.findAll();
-/* 
-        List<Attribute> attributesDto = attributes.stream()
-                .map(attribute -> modelMapper.map(attribute, Attribute.class))
-                .collect(Collectors.toList());
-*/
         return ResponseEntity.ok(attributes);
     }
     //

@@ -34,5 +34,5 @@ public class ProductDto {
     private String imageUrl;
     private double price;
     private List<GalleryDto> gallery;
-    private List<ProductAttribute> attributes = new ArrayList<>();
+   // private List<ProductAttribute> attributes = new ArrayList<>();
 }

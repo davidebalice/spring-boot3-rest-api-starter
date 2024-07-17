@@ -36,5 +36,5 @@ public class ProductAttribute {
 
     @ManyToOne
     @JoinColumn(name = "attribute_value_id")
-    private AttributeValue attributeValue;
+    private Value attributeValue;
 }

@@ -283,15 +283,7 @@ public class ProductController {
         Product product = optionalProduct.get();
 
         productAttribute.setProduct(product);
-        /*
-         * try {
-         * productAttributeRepository.save(productAttribute);
-         * } catch (DataIntegrityViolationException e) {
-         * return new ResponseEntity<FormatResponse>(
-         * new FormatResponse("Attribute combination already exists for this product."),
-         * HttpStatus.CONFLICT);
-         * }
-         */
+        
 
         Optional<ProductAttribute> existingAttribute = productAttributeRepository
                 .findByProductAndAttributeAndAttributeValue(
