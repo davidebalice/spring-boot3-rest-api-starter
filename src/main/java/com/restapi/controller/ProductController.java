@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.restapi.config.DemoMode;
+import com.restapi.dto.ProductAttributeDto;
 import com.restapi.dto.ProductDto;
 import com.restapi.exception.DemoModeException;
 import com.restapi.model.Product;
@@ -38,6 +39,7 @@ import com.restapi.model.ProductAttribute;
 import com.restapi.repository.ProductAttributeRepository;
 import com.restapi.repository.ProductRepository;
 import com.restapi.security.JwtService;
+import com.restapi.service.ProductAttributeService;
 import com.restapi.service.ProductService;
 import com.restapi.utility.FormatResponse;
 
@@ -54,7 +56,9 @@ public class ProductController {
 
     private final ProductRepository repository;
     private final ProductAttributeRepository productAttributeRepository;
+    private final ProductAttributeService productAttributeService;
     private final ProductService service;
+
     @Autowired
     private JwtService jwtService;
 
@@ -68,9 +72,10 @@ public class ProductController {
     private String uploadPath;
 
     public ProductController(ProductRepository repository, ProductAttributeRepository productAttributeRepository,
-            ProductService service) {
+            ProductService service, ProductAttributeService productAttributeService) {
         this.repository = repository;
         this.productAttributeRepository = productAttributeRepository;
+        this.productAttributeService = productAttributeService;
         this.service = service;
     }
 
@@ -272,9 +277,14 @@ public class ProductController {
         }
     }
 
+    @Operation(summary = "Set attribute and value to product", description = "Set attribute and value to product")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("/{id}/attributes")
     public ResponseEntity<FormatResponse> addAttributeToProduct(@PathVariable int id,
             @RequestBody ProductAttribute productAttribute) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         Optional<Product> optionalProduct = repository.findById(id);
         if (!optionalProduct.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -283,7 +293,6 @@ public class ProductController {
         Product product = optionalProduct.get();
 
         productAttribute.setProduct(product);
-        
 
         Optional<ProductAttribute> existingAttribute = productAttributeRepository
                 .findByProductAndAttributeAndAttributeValue(
@@ -299,4 +308,47 @@ public class ProductController {
         return new ResponseEntity<FormatResponse>(new FormatResponse("Attribute assigned to product"), HttpStatus.OK);
     }
 
+    @Operation(summary = "Set attribute and value to product", description = "Set attribute and value to product")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @PostMapping("/{id}/remove-attributes")
+    public ResponseEntity<FormatResponse> removeAttributeToProduct(@PathVariable int id,
+            @RequestBody ProductAttribute productAttribute) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
+        Optional<Product> optionalProduct = repository.findById(id);
+        if (!optionalProduct.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Product product = optionalProduct.get();
+
+        productAttribute.setProduct(product);
+
+        Optional<ProductAttribute> existingAttribute = productAttributeRepository
+                .findByProductAndAttributeAndAttributeValue(
+                        product, productAttribute.getAttribute(), productAttribute.getAttributeValue());
+
+        if (!existingAttribute.isPresent()) {
+            return new ResponseEntity<>(new FormatResponse("Attribute combination does not exist for this product."),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        productAttributeRepository.delete(existingAttribute.get());
+
+        return new ResponseEntity<>(new FormatResponse("Attribute removed from product"), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get attributes and values of a product", description = "Get attributes and values of a product")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @GetMapping("/{id}/setted-attributes-value")
+    public ResponseEntity<List<ProductAttributeDto>> getSettedAttributesAndValues(@PathVariable int id) {
+        List<ProductAttribute> attributes = productAttributeService.getAttributesByProductId(id);
+
+        List<ProductAttributeDto> attributeDtos = attributes.stream()
+                .map(pa -> new ProductAttributeDto(pa.getAttribute(), pa.getAttributeValue()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(attributeDtos);
+    }
 }
