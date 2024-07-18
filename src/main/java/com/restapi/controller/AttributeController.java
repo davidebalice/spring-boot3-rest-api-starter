@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.restapi.config.DemoMode;
+import com.restapi.dto.AttributeDto;
+import com.restapi.dto.ValueDto;
 import com.restapi.exception.DemoModeException;
 import com.restapi.model.Attribute;
 import com.restapi.repository.AttributeRepository;
@@ -59,6 +60,27 @@ public class AttributeController {
     }
     //
 
+    // Get all Attributes and values Rest Api
+    // http://localhost:8081/api/v1/attributes
+    @Operation(summary = "Get all attributes and values", description = "Retrieve a list of all attributes and their values")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @GetMapping("/attributes-values")
+    public ResponseEntity<List<AttributeDto>> listValues() {
+        List<Attribute> attributes = repository.findAllWithValues();
+
+        List<AttributeDto> attributeDTOs = attributes.stream()
+                .map(attribute -> new AttributeDto(
+                        attribute.getId(),
+                        attribute.getName(),
+                        attribute.getValues().stream()
+                                .map(value -> new ValueDto(value.getId(), value.getValue()))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(attributeDTOs);
+    }
+    //
+
     // Get single Attribute Rest Api (get id by url)
     // http://localhost:8081/api/v1/attributes/1
     @Operation(summary = "Get Attribute By ID REST API", description = "Get Attribute By ID REST API is used to get a single Attribute from the database, get id by url")
@@ -75,7 +97,7 @@ public class AttributeController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@Valid @RequestBody Attribute p) {
-         if (demoMode.isEnabled()) {
+        if (demoMode.isEnabled()) {
             throw new DemoModeException();
         }
         repository.save(p);
@@ -111,7 +133,5 @@ public class AttributeController {
 
     }
     //
-
-    
 
 }
