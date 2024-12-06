@@ -117,6 +117,9 @@ public class ProductServiceImpl implements ProductService {
             if (updatedProduct.getPrice() != 0.0) {
                 existingProduct.setPrice(updatedProduct.getPrice());
             }
+            if (updatedProduct.getSku() != "") {
+                existingProduct.setSku(updatedProduct.getSku());
+            }
             if (updatedProduct.getImageUrl() != null) {
                 existingProduct.setImageUrl(updatedProduct.getImageUrl());
             }

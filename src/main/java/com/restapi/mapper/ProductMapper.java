@@ -13,6 +13,7 @@ public class ProductMapper {
         productDto.setName(product.getName());
         productDto.setDescription(product.getDescription());
         productDto.setPrice(product.getPrice());
+        productDto.setSku(product.getSku());
         productDto.setIdCategory(product.getCategory().getId());
 
         return productDto;
@@ -25,6 +26,7 @@ public class ProductMapper {
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
+        product.setSku(productDto.getSku());
 
         Category category = new Category();
         category.setId(product.getCategory().getId());

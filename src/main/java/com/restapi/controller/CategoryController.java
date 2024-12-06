@@ -55,7 +55,7 @@ public class CategoryController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/")
     public ResponseEntity<List<CategoryDto>> list() {
-        List<Category> categories = (List<Category>) repository.findAll();
+        List<Category> categories = (List<Category>) repository.findAllByOrderByNameAsc();
         List<CategoryDto> categoriesDto = categories.stream()
                 .map(category -> modelMapper.map(category, CategoryDto.class))
                 .collect(Collectors.toList());
@@ -79,7 +79,7 @@ public class CategoryController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@Valid @RequestBody Category p) {
-         if (demoMode.isEnabled()) {
+        if (demoMode.isEnabled()) {
             throw new DemoModeException();
         }
         repository.save(p);

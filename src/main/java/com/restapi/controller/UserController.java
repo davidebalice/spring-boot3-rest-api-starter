@@ -79,46 +79,6 @@ public class UserController {
     }
     //
 
-    /*
-     * 
-     * // Get data of Logged User
-     * // http://localhost:8081/api/v1/users/me
-     * 
-     * @Operation(summary = "Get data of Logged User", description =
-     * "Retrieve data of Logged User")
-     * 
-     * @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-     * 
-     * @GetMapping("/me")
-     * public ResponseEntity<User> getLoggedInUser(@AuthenticationPrincipal
-     * UserDetails userDetails) {
-     * if (userDetails == null) {
-     * throw new RuntimeException("User not authenticated");
-     * }
-     * 
-     * String userName = userDetails.getUsername();
-     * 
-     * ResponseEntity<User> loggedInUserResponse =
-     * userService.getUserByUsername(userName);
-     * 
-     * 
-     * 
-     * 
-     * if (!loggedInUserResponse.getStatusCode().is2xxSuccessful()) {
-     * throw new RuntimeException("Logged user not found");
-     * }
-     * 
-     * User loggedInUser = loggedInUserResponse.getBody();
-     * 
-     * if (loggedInUser == null) {
-     * throw new RuntimeException("Logged user details are null");
-     * }
-     * 
-     * return new ResponseEntity<>(loggedInUser, HttpStatus.OK);
-     * }
-     * //
-     * 
-     */
 
     // Get all Users Rest Api
     // http://localhost:8081/api/v1/users

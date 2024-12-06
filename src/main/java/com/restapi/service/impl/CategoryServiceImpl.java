@@ -29,6 +29,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public List<Category> getAllCategoriesOrderedByNameAsc() {
+        return repository.findAllByOrderByNameAsc();
+    }
+
+    @Override
     public CategoryDto getCategoryById(int categoryId) {
         Category category = repository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category", "id"));

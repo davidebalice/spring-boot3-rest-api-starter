@@ -58,13 +58,13 @@ public class SecurityConfig {
 		return userService;
 	}
 
-	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(request -> {
 			List<String> allowedOrigins = new ArrayList<>();
 			allowedOrigins.add("http://localhost");
 			allowedOrigins.add("http://localhost:4200");
+			allowedOrigins.add("https://angular-products.davidebalice.dev");
 			CorsConfiguration config = new CorsConfiguration();
 			config.setAllowedOrigins(allowedOrigins);
 			config.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
@@ -78,7 +78,7 @@ public class SecurityConfig {
 								"/api/v1/csrf",
 								"swagger-ui.html", "/swagger-ui/**", "/v3/**")
 						.permitAll()
-						//.requestMatchers("/api/v1/products/image/**").permitAll()
+						// .requestMatchers("/api/v1/products/image/**").permitAll()
 						.anyRequest().authenticated())
 
 				.formLogin((form) -> form
